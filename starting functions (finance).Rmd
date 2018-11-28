@@ -20,23 +20,31 @@ grow(10,7,10)
 
 ```{r}
 payments <- function(base, interest, payment){ #annual payment made is payment, base is the debt, interest is the rate at which the debt grows
-    if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
+  if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
     interest = interest/100
-    }
-  annual.debt <- vector(length=100)
-  for(i in 1:100){
-    base = (base-payment)*(1+interest)
-    annual.debt[i] <- base
-    n<-i
-   if(base<0) break
   }
-  total.pay =n*payment
-  print(annual.debt)
-  print(n)
-  print(total.pay)
-}
   
-payments(100, .07, 6.5)
+  annual.debt <- numeric() #initialize the annual.debt vector
+  for(i in 1:100){
+    base <- (base-payment)*(1+interest) 
+    annual.debt <- c(annual.debt, base)
+    n<-i
+    if(base<payment) break #break when remaining amount left to be paid is less than our payment amount
+  }
+ if(annual.debt[n]< payment) annual.debt <- c(annual.debt, 0)
+  total.pay = n*payment + annual.debt[n] #in addition to making the consistent annual payments, we need to add on the final payment which is less than the value we pay annually
+  print(n+1) #print the number of payments we made
+  print(total.pay) #print the total payments we made
+  print(annual.debt) #print out the debt remaining each year
+
+}
+
+  
+payments(100, .07, 4)#testing our function
+
+
+
+#need to throw an error or warning to the user if it does not reach zero (if the loop doesn't break) 
 ```
 
 ```{r}
@@ -45,7 +53,7 @@ income.driven <- function(base, interest,income) {
     interest = interest/100
       }
   
-  payment <- income/10 #****ULTIMATELY WE SHOULD CHANGE INCOME TO BE A VECTOR, IT WILL VARY BY YEAR (ESP MOVING FROM RESIDENCY INTO ATTENDINGHOOD)***
+  payment <- income/10 #****ULTIMATELY WE SHOULD CHANGE INCOME TO BE A VECTOR, IT WILL VARY BY YEAR (ESP MOVING FROM RESIDENCY INTO ATTENDINGHOOD) - in the for loop we will then need to call the index year of income***
   annual.debt <- vector(length=20)
   for(i in 1:20){
     base = (base-payment)*(1+interest)
@@ -66,8 +74,8 @@ income.driven.short <- function(base, interest,income) { #this is the special 10
     interest = interest/100
       }
   
-  payment <- income/10
-  annual.debt <- vector(length=10)#****ULTIMATELY WE SHOULD CHANGE INCOME TO BE A VECTOR, IT WILL VARY BY YEAR (ESP MOVING FROM RESIDENCY INTO ATTENDINGHOOD)***
+  payment <- income/10 #****ULTIMATELY WE SHOULD CHANGE INCOME TO BE A VECTOR, IT WILL VARY BY YEAR (ESP MOVING FROM RESIDENCY INTO ATTENDINGHOOD) - in the for loop we will then need to call the index year of income***
+  annual.debt <- vector(length=10)
   for(i in 1:10){
     base = (base-payment)*(1+interest)
     annual.debt[i] <- base
@@ -78,5 +86,51 @@ income.driven.short <- function(base, interest,income) { #this is the special 10
   print(income) #total amount paid (before taxes on the forgiven amount)
 }
 
-income.driven.short(100, .07, 5)
+income.driven.short(100, .07, 7)
+```
+
+
+```{r}
+
+find.debt <- function(costper, interest, initial.debt =0) { #initial.debt is how much debt you enter medical school with - assumes four years of med school, assumes a constant rate of cost per year and the same interest rate on all of the loans ---- this finds how much debt people will have at 
+   if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
+    interest = interest/100
+   }
+  
+  total.debt = initial.debt #they start with an initial amount of debt
+  for(i in 1:4) {
+    total.debt = total.debt*(1+interest)
+    total.debt = total.debt + costper
+  }
+  print(total.debt)
+}
+
+
+forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, years =20, print.saved=1) {#determines how much you need to put away per year to cover your tax bill on the forgiven amount from income.driven or income.driven short (for income driven short you would need to change years to 10)
+  tax.debt <- amount.forgiven*tax.rate #this will show how much of your "forgiven" debt is now owed to the IRS
+  test = tax.debt/(1.5*years)
+  #WE CAN PROBABLY FIND SOMETHING LIKE THIS IN A PACKAGE BASED ON RETIREMENT CALCULATORS?
+
+  for(k in 1:20) {test = test*0.95
+  saved =0
+  for(i in 1:years) {
+    saved = saved + test
+    saved = saved*(1+growth.rate)
+  }
+   print(test) #prints how much you need to save per year
+  if(saved - tax.debt < 0){ break}
+  } #*****NEED TO CHANGE IT TO ACCOUNT FOR CAPITAL GAINS TAX****
+  if(print.saved) { 
+    print(saved)
+    }
+}
+
+forgiveness.prep.fund(1000000, .07, .3) <- function()
+
+
+post.tax.lifetime.earnings
+
+
+
+
 ```
