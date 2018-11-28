@@ -36,4 +36,46 @@ graph_scatter(test, "Number of Years", "Amount of Debt Remaining (in USD)", "Rep
 #We obtained average physician salaries from Medscape and Doximity.
 #neurosurgery and radiation oncology came from doximity, everything else came from Medscape
 "https://residency.wustl.edu/residencies/length-of-residencies/" #This is where we obtained residency lengths from.
+"https://www.uwmedicine.org/education/Pages/specialties-subspecialties.aspx" #additional training lenghts
 
+##working with specialty_info.csv
+library(readr)
+specialty_info <- read_csv("specialty_info.csv")
+View(specialty_info)
+specialty_info$`Years of Training`
+specialty_info$`Annual Salary`
+
+ggplot(specialty_info, aes(`Years of Training`, `Annual Salary`)) + geom_point() + geom_line(method = "lm")
+
+#assigning specialty characteristics if statements
+if(specialty == "Anesthesiology") {res = 4& salary = 386000}
+if(specialty == "Dermatology") {res = 4& salary = 392000}
+if(specialty == "Emergency Medicine") {res = 3& salary = 350000}
+if(specialty == "Family Practice") {res = 3& salary = 219000}
+if(specialty == "General Surgery") {res = 5& salary = 322000}
+if(specialty == "Internal Medicine") {res = 3& salary = 230000}
+if(specialty == "Neurology") {res = 4& salary = 244000}
+if(specialty == "Neurosurgery") {res = 7& salary = 663000}
+if(specialty == "Obstetrics/Gynecology") {res = 4& salary = 300000}
+if(specialty == "Ophthalmology") {res = 4& salary = 357000}
+if(specialty == "Orthopedic Surgery") {res = 5& salary = 497000}
+if(specialty == "Otolaryngology") {res = 5& salary = 383000}
+if(specialty == "Pathology") {res = 4& salary = 286000}
+if(specialty == "Pediatrics") {res = 3& salary = 212000}
+if(specialty == "Physical Medicine") {res = 4& salary = 269000}
+if(specialty == "Plastic Surgery") {res = 6& salary = 501000}
+if(specialty == "Psychiatry") {res = 4& salary = 273000}
+if(specialty == "Radiation Oncology") {res = 5& salary = 468000}
+if(specialty == "Radiology, Diagnostic") {res = 5& salary = 401000}
+if(specialty == "Urology") {res = 5& salary = 373000}
+if(specialty == "Cardiology") {res = 6& salary = 423000}
+if(specialty == "Endocrinology") {res = 5& salary = 212000}
+if(specialty == "Gastroenterology") {res = 6& salary = 408000}
+if(specialty == "Infectious Disease") {res = 5& salary = 231000}
+if(specialty == "Nephrology") {res = 5& salary = 294000}
+if(specialty == "Oncology") {res = 5& salary = 363000}
+if(specialty == "Pulmonary") {res = 5& salary = 321000}
+if(specialty == "Rheumatology") {res = 5& salary = 257000}
+if(specialty == "Immunology") {res = 5& salary = 272000}
+
+res = res + fellowship
