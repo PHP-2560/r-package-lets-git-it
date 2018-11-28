@@ -39,7 +39,41 @@ payments(100, .07, 6.5)
 ```
 
 ```{r}
-income.driven <- function(income, debt) {
-  payments()
+income.driven <- function(base, interest,income) {
+      if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
+    interest = interest/100
+      }
+  payment <- income/10
+  annual.debt <- vector(length=20)
+  for(i in 1:20){
+    base = (base-payment)*(1+interest)
+    annual.debt[i] <- base
+   if(base<0) break
+  }
+  forgiven.amount <- annual.debt[20]
+  print(forgiven.amount) #how much is forgiven
+  print(2*income) #total amount paid (before taxes on the forgiven amount)
 }
+
+income.driven(100, .07, 5)
+```
+
+```{r}
+income.driven.short <- function(base, interest,income) { #this is the special 10 year repayment where you have to work for a 401(c) *note that this has been politically contentious and that there is no gaurantee it will be upheld, even after 9 years of repayments
+      if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
+    interest = interest/100
+      }
+  payment <- income/10
+  annual.debt <- vector(length=10)
+  for(i in 1:10){
+    base = (base-payment)*(1+interest)
+    annual.debt[i] <- base
+   if(base<0) break
+  }
+  forgiven.amount <- annual.debt[10]
+  print(forgiven.amount) #how much is forgiven
+  print(income) #total amount paid (before taxes on the forgiven amount)
+}
+
+income.driven.short(100, .07, 5)
 ```
