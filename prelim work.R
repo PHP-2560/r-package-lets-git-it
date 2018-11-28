@@ -32,3 +32,8 @@ graph_scatter <- function(input_vector, input_x, input_y, input_title) {
 }
 
 graph_scatter(test, "Number of Years", "Amount of Debt Remaining (in USD)", "Repayment Plan")
+
+#We obtained average physician salaries from Medscape and Doximity.
+#neurosurgery and radiation oncology came from doximity, everything else came from Medscape
+"https://residency.wustl.edu/residencies/length-of-residencies/" #This is where we obtained residency lengths from.
+
