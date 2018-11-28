@@ -109,7 +109,6 @@ find.debt <- function(costper, interest, initial.debt =0) { #initial.debt is how
 forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, years =20, print.saved=1) {#determines how much you need to put away per year to cover your tax bill on the forgiven amount from income.driven or income.driven short (for income driven short you would need to change years to 10)
   tax.debt <- amount.forgiven*tax.rate #this will show how much of your "forgiven" debt is now owed to the IRS
   test = tax.debt/(1.5*years)
-  #WE CAN PROBABLY FIND SOMETHING LIKE THIS IN A PACKAGE BASED ON RETIREMENT CALCULATORS?
 
   for(k in 1:20) {test = test*0.95
   saved =0
@@ -117,20 +116,31 @@ forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, years 
     saved = saved + test
     saved = saved*(1+growth.rate)
   }
-   print(test) #prints how much you need to save per year
   if(saved - tax.debt < 0){ break}
   } #*****NEED TO CHANGE IT TO ACCOUNT FOR CAPITAL GAINS TAX****
+  print(test) #prints how much you need to save per year
   if(print.saved) { 
     print(saved)
     }
+} #*******SHOULD ADD A CONDITION ONTO THIS TO HAVE IT WAIT UNTIL AFTER RESIDENCY TO HAVE YOU START SAVING TOWARD THIS FUND (I.E. DO 20-RES FOR YEARS)*****
+
+forgiveness.prep.fund(1000000, .07, .3) 
+
+
+post.tax.lifetime.earnings <- function(salary, tax.rate, total.payment, years=20) { #shows earnings left after a certain number of years, taking out taxes and debt, uses a flat tax rate (more accurate would be to used a stepped one), and ignores any possible deductions (i.e. pretax spending) 
+  post.tax = salary*(1-tax.rate)*years
+  post.tax = post.tax-total.payment #need to create a version of this for individuals who have the 10% option and for those who do military or underserved
+  return(post.tax)
 }
 
-forgiveness.prep.fund(1000000, .07, .3) <- function()
-
-
-post.tax.lifetime.earnings
+post.tax.lifetime.earnings(300000, .4, 1300000)
 
 
 
 
+
+
+#STILL NEED TO MAKE AN EARNINGS VECTOR WITH RESIDENCY SALARIES DURING RES YEARS AND FULL PHYSICIAN SALARIES DURING PHYSICIAN YEARS (FOR EACH SPECIALTY) --- SIMILAR HAS TO BE DONE FOR MILITARY (WITH MED SCHOOL SALARY ADDED ON AS WELL) ---- LOTS OF DEFAULT VALUES SHOULD ALSO BE FILLED IN --- FUNCTIONS SHOULD BE MADE TO COHERE TOGETHER A BIT NICER --- COMENTS IN MOST OF THE FUNCTIONS ON HOW THEY NEED TO BE IMPROVED -- LOTS OF SMALLER TAX DETAILS MISSING (EX. STATE TAX, 2500 ON STUDENT LOAN INTEREST PER YEAR BEING PRE TAX, ETC) -- NEED TO DISTINGUISH PRIVATE AND FEDERAL LOANS -- ADD DEFERED OR IMMEDIATE REPAYMENT OPTIONS FOR RESIDENCY FOR THE PAY IN FULL OPTION -- CHANGE RATES BECAUSE I FORGOT THAT FEDERAL LOANS DONT COMPOUND IN MEDICAL SCHOOL BUT ARE SIMPLE INTEREST -- ADD IN MALPRACTICE INSURANCE?
+
+#DISPLAY GROSS INCOME PER YEAR AND POST TAX POST STUDENTLOAN INCOME PER YEAR FOR EACH OPTION (X AXIS IS YEARS, Y IS INCOME, SEPARATE GRAPHS FOR GROSS AND 'NET')
 ```
