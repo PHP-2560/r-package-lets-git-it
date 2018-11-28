@@ -4,5 +4,42 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+grow <- function(base, interest, n=1) { #grow takes the base value and grows or shrinks it by the interest rate (which should be .07 if the rate is 7%), n is how many times it should compound
+  if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
+    interest = interest/100
+  }
+  for(i in 1:n){#grows it by the rate for each iteration (n many iterations)
+    base = base*(1+interest)
+  }
+  return(base)
+}
 
+grow(10,7,10)
+```
+
+```{r}
+payments <- function(base, interest, payment){ #annual payment made is payment, base is the debt, interest is the rate at which the debt grows
+    if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
+    interest = interest/100
+    }
+  annual.debt <- vector(length=100)
+  for(i in 1:100){
+    base = (base-payment)*(1+interest)
+    annual.debt[i] <- base
+    n<-i
+   if(base<0) break
+  }
+  total.pay =n*payment
+  print(annual.debt)
+  print(n)
+  print(total.pay)
+}
+  
+payments(100, .07, 6.5)
+```
+
+```{r}
+income.driven <- function(income, debt) {
+  payments()
+}
 ```
