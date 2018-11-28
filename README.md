@@ -1,3 +1,3 @@
 A package by Kevin Chen and Jon Spiegel
 
-We have not finalized what our R package will be on, but potentially we may convert our analysis of Craigslist into a R package, as we believe many Brown students may find it useful in helping them be more informed shoppers. Craigslist is a great way of buying and selling items secondhand and at affordable prices.
+We will be creating a package to help medical students do financial planning and choose between medical school financing options. We believe that this package will be helpful because medical school is very expensive, and it can be very difficult for people to find good information about financial planning.
