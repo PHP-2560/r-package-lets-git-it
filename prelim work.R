@@ -9,7 +9,9 @@ payments <- function(base, interest, payment){ #annual payment made is payment, 
     n<-i
     if(base<payment) break #break when remaining amount left to be paid is less than our payment amount
   }
-  annual.debt <- c(annual.debt, 0)
+  if (annual.debt[n] <= payment) {
+    annual.debt <- c(annual.debt, 0)
+  } 
   total.pay = n*payment + annual.debt[n] #in addition to making the consistent monthly payments, we need to add on the final payment which is less than the value we pay annually
   print(n+1) #print the number of payments we made
   print(total.pay) #print the total payments we made
