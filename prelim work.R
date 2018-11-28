@@ -40,12 +40,19 @@ graph_scatter(test, "Number of Years", "Amount of Debt Remaining (in USD)", "Rep
 
 ##working with specialty_info.csv
 library(readr)
+library(scales)
+library(ggrepel)
 specialty_info <- read_csv("specialty_info.csv")
 View(specialty_info)
-specialty_info$`Years of Training`
-specialty_info$`Annual Salary`
 
-ggplot(specialty_info, aes(`Years of Training`, `Annual Salary`)) + geom_point() + geom_line(method = "lm")
+p <- ggplot(specialty_info, aes(`Years of Training`, `Annual Salary`)) + geom_smooth(method = "lm") + geom_point() + scale_y_continuous(labels = comma) + xlab("Years of Training") + ylab("Average Annual Salary (in USD)") + ggtitle("Average Annual Earnings for Each Specialty") + theme_economist() + scale_color_economist()
+p + geom_label_repel(aes(label = Specialty),
+                     box.padding   = 0.35, 
+                     point.padding = 0.5,
+                     segment.color = 'grey50',
+                     size = 2)
+wow <- lm(`Annual Salary`~`Years of Training`, data = specialty_info)
+summary(wow)
 
 #assigning specialty characteristics if statements
 if(specialty == "Anesthesiology") {res = 4& salary = 386000}
