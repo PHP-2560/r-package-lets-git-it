@@ -18,7 +18,7 @@ payments <- function(base, interest, payment){ #annual payment made is payment, 
   print(annual.debt) #print out the debt remaining each year
 }
 
-test <- payments(100, .07, 10) #testing our function
+test <- payments(100, .07, 20) #testing our function
 test
 
 
@@ -31,4 +31,4 @@ graph_scatter <- function(input_vector, input_x, input_y, input_title) {
   ggplot(as.data.frame(input_vector), aes(1:length(input_vector), input_vector)) + geom_smooth() + geom_point() + xlab(input_x) + ylab(input_y) + ggtitle(input_title) + theme_economist() + scale_color_economist()
 }
 
-graph_scatter(test, "Number of Years", "Debt", "Repayment Plan")
+graph_scatter(test, "Number of Years", "Amount of Debt Remaining (in USD)", "Repayment Plan")
