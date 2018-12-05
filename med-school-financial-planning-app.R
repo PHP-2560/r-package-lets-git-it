@@ -33,6 +33,28 @@ ui <- fluidPage(
     )
   ) 
 
+library(dplyr)
+
+specialty_res <- function(specialty) {
+  res <- specialty_info %>%
+    filter(Specialty == specialty) %>%
+    select(`Years of Training`)
+  print(as.numeric(res))
+}
+
+res <- specialty_res("Plastic Surgery")
+
+specialty_salary <- function(specialty) {
+  salary <- specialty_info %>%
+    filter(Specialty == specialty) %>%
+    select(`Annual Salary`)
+  print(as.numeric(salary))
+}
+
+salary <- specialty_salary("Plastic Surgery")
+
+
+
 server <- function(input, output) {
   #x-axis of PGY years, y-axis of dollars
   #1 color is gross income (stop at 20 years)
