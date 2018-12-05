@@ -38,6 +38,9 @@ graph_scatter(test, "Number of Years", "Amount of Debt Remaining (in USD)", "Rep
 "https://residency.wustl.edu/residencies/length-of-residencies/" #This is where we obtained residency lengths from.
 "https://www.uwmedicine.org/education/Pages/specialties-subspecialties.aspx" #additional training lenghts
 
+#military salary information was obtained from here
+"https://www.todaysmilitary.com/working/compensation-estimator"
+
 ##working with specialty_info.csv
 library(readr)
 library(scales)

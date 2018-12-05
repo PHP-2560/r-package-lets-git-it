@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 ui <- fluidPage(
   titlePanel("Medical School Financial Planning"),
@@ -24,27 +25,51 @@ ui <- fluidPage(
       ),
       mainPanel(
         tabsetPanel(
-          tabPanel("Year-by-year", plot("year_by_year")),
-          tabPanel("Lifetime Earnings", plot("lifetime_earnings")),
-          tabPanel("Debt Repayment", plot("debt"))
-          
+          tabPanel("Year-by-year", plotOutput("year_by_year")),
+          tabPanel("Lifetime Earnings", plotOutput("lifetime_earnings")),
+          tabPanel("Debt Repayment", plotOutput("debt"))
         )
       )
-    ),
-
-  
-  titlePanel("Medical School Financial Planning"), 
-  h3("Input a z-score below to calculate its correponding p-value."),
-  sidebarLayout(
-    sidebarPanel(
-      numericInput("z", "z-score", 0)), #define the input and assign it a default value of 0
-    mainPanel(
-      textOutput("p_value")) #define the output
+    )
   ) 
-)
+
+library(dplyr)
+
+specialty_res <- function(specialty) {
+  res <- specialty_info %>%
+    filter(Specialty == specialty) %>%
+    select(`Years of Training`)
+  print(as.numeric(res))
+}
+
+res <- specialty_res("Plastic Surgery")
+
+specialty_salary <- function(specialty) {
+  salary <- specialty_info %>%
+    filter(Specialty == specialty) %>%
+    select(`Annual Salary`)
+  print(as.numeric(salary))
+}
+
+salary <- specialty_salary("Plastic Surgery")
+
+
 
 server <- function(input, output) {
-  output$p_value <- reactive({pnorm(input$z)}) #calculate p-values using pnorm
+  #x-axis of PGY years, y-axis of dollars
+  #1 color is gross income (stop at 20 years)
+  #1 color is disposale income (post-taxes and debt repayment)
+  #1 color is debt repayment per year
+  output$year_by_year <- renderPlot({
+    input$specialty
+    input$PGY_education
+    input$avg_residency_salary
+    input$residency_tax
+    input$attending_tax
+    
+  })
+  output$lifetime_earnings
+  output$debt
 }
 
 shinyApp(ui = ui, server = server)
