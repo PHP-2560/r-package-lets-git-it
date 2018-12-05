@@ -65,7 +65,7 @@ income.driven <- function(base, interest,income) {
   }
   forgiven.amount <- annual.debt[20]
   print(forgiven.amount) #how much is forgiven
-  print(2*income) #total amount paid (before taxes on the forgiven amount)
+   #total amount paid (before taxes on the forgiven amount) --- print(2*income)
 }
 
 income.driven(100, .07, 5)
@@ -86,7 +86,7 @@ income.driven.short <- function(base, interest,income) { #this is the special 10
   }
   forgiven.amount <- annual.debt[10]
   print(forgiven.amount) #how much is forgiven
-  print(income) #total amount paid (before taxes on the forgiven amount)
+  #total amount paid (before taxes on the forgiven amount) print(income)
 }
 
 income.driven.short(100, .07, 7)
@@ -106,10 +106,10 @@ find.debt <- function(costper, interest, initial.debt =0) { #initial.debt is how
     total.debt = total.debt + costper
   }
   print(total.debt)
-}
+} #PROBABLY GOING TO DELETE THIS ONE
 
 
-forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, years =20, print.saved=1) {#determines how much you need to put away per year to cover your tax bill on the forgiven amount from income.driven or income.driven short (for income driven short you would need to change years to 10)
+forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, years =20-res, print.saved=1) {#determines how much you need to put away per year to cover your tax bill on the forgiven amount from income.driven or income.driven short (for income driven short you would need to change years to 10) --- I assume people aren't putting money toward this during residency
   tax.debt <- amount.forgiven*tax.rate #this will show how much of your "forgiven" debt is now owed to the IRS
   test = tax.debt/(1.5*years)
 
@@ -122,15 +122,15 @@ forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, years 
   if(saved - tax.debt < 0){ break}
   } #*****NEED TO CHANGE IT TO ACCOUNT FOR CAPITAL GAINS TAX****
   print(test) #prints how much you need to save per year
-  if(print.saved) { 
+  if(print.saved==1) {
     print(saved)
     }
-} #*******SHOULD ADD A CONDITION ONTO THIS TO HAVE IT WAIT UNTIL AFTER RESIDENCY TO HAVE YOU START SAVING TOWARD THIS FUND (I.E. DO 20-RES FOR YEARS)*****
+} 
 
-forgiveness.prep.fund(1000000, .07, .3) 
+forgiveness.prep.fund(1000000, .07, .3, years = 17, print.saved=0) 
 
 
-post.tax.lifetime.earnings <- function(salary, tax.rate, total.payment, years=20) { #shows earnings left after a certain number of years, taking out taxes and debt, uses a flat tax rate (more accurate would be to used a stepped one), and ignores any possible deductions (i.e. pretax spending) 
+post.tax.lifetime.earnings <- function(salary, tax.rate, total.payment, years=10-res) { #shows earnings left after a certain number of years, taking out taxes and debt, uses a flat tax rate (more accurate would be to used a stepped one), and ignores any possible deductions (i.e. pretax spending) 
   post.tax = salary*(1-tax.rate)*years
   post.tax = post.tax-total.payment #need to create a version of this for individuals who have the 10% option and for those who do military or underserved
   return(post.tax)
@@ -146,6 +146,9 @@ post.tax.lifetime.earnings(300000, .4, 1300000)
 #STILL NEED TO MAKE AN EARNINGS VECTOR WITH RESIDENCY SALARIES DURING RES YEARS AND FULL PHYSICIAN SALARIES DURING PHYSICIAN YEARS (FOR EACH SPECIALTY) --- SIMILAR HAS TO BE DONE FOR MILITARY (WITH MED SCHOOL SALARY ADDED ON AS WELL) ---- LOTS OF DEFAULT VALUES SHOULD ALSO BE FILLED IN --- FUNCTIONS SHOULD BE MADE TO COHERE TOGETHER A BIT NICER --- COMENTS IN MOST OF THE FUNCTIONS ON HOW THEY NEED TO BE IMPROVED -- LOTS OF SMALLER TAX DETAILS MISSING (EX. STATE TAX, 2500 ON STUDENT LOAN INTEREST PER YEAR BEING PRE TAX, ETC) -- NEED TO DISTINGUISH PRIVATE AND FEDERAL LOANS -- ADD DEFERED OR IMMEDIATE REPAYMENT OPTIONS FOR RESIDENCY FOR THE PAY IN FULL OPTION -- CHANGE RATES BECAUSE I FORGOT THAT FEDERAL LOANS DONT COMPOUND IN MEDICAL SCHOOL BUT ARE SIMPLE INTEREST -- ADD IN MALPRACTICE INSURANCE? --- ADD IN OPTIONS FOR LOAN FORGIVENESS FOR JOINING MILITARY AND FOR LATER UNDERSERVED
 
 
+
+
+#---------------------------------------------------
 #First, what if you are repaying in full - here we will assume you do not pay during residency and look to be done paying 20 years after med school (13 to 17  after res)
 
 #starting with: specialty (salary and res), loan total, interest rate, and tax rate fixed
@@ -154,11 +157,11 @@ post.tax.lifetime.earnings(300000, .4, 1300000)
     #This will take the debt total grown after res and calculate how much to pay per year to pay off loan after res
 pay.per.year <- function(debt.total, interest, years =20-res) {
   testpay = debt.total*interest*3
+  for(k in 1:20) {testpay <- testpay*0.95
   DT <- debt.total
-  for(k in 1:20) {testpay = testpay*0.95
   for(i in 1:years) {
-    DT = DT - testpay
-    DT = DT*(1+interest)
+    DT <- DT - testpay
+    DT <- DT*(1+interest)
   }
   if(length(payments(debt.total, interest, testpay)) >= years){ break} #we are trying to stop it when the repayment plan finishes at the right time
   } 
@@ -166,10 +169,60 @@ pay.per.year <- function(debt.total, interest, years =20-res) {
   print(testpay) #prints how much you need to pay per year
 }
 
-pay.per.year(100, .07, years=17)
-
+pay.per.year(600000, .075, years=16) #this pay.per.year gives us a fixed number for the person to pay during each year of their attendinghood
 
 #the loan amount each year over the years 
-payments(base, interest, payment) #need to then concatanate the growing loan as a vector over the residency years together with this, should end with zero debt at 20 years
+payments(base, interest, payment) #need to then concatanate the growing loan as a vector over the residency years together with this (the shrinking loan over attendinghood), should end with zero debt at 20 years
 
+
+
+
+
+
+
+#---------------------------------------------------
+#now we will look at the 20 year 10% repayment plan:
+#********NEED TO ADD IN PRIVATE LOANS***************
+
+#income is from income vector
+
+income <- 300000
+res <-4 #just initializing values for both of these
+
+
+forgiveness.prep.fund(amount.forgiven = income.driven(400000, .07, income), growth.rate=.07, .3, print.saved=1) #gives an output of the amount forgiven, the amound put away each year, and the total amount saved
+
+#We have to pay 10%/year for all 20 years, plus the value given by the forgiveness prep fund for each year as an attending
+
+#---------------------------------------------------
+#now we will look at the 10 year 10% repayment plan:
+
+#********NEED TO ADD IN PRIVATE LOANS***************
+
+#income is from income vector
+
+forgiveness.prep.fund(amount.forgiven = income.driven.short(400000, .07, income), growth.rate=.07, .3, years=10-res, print.saved=1) #gives an output of the amount forgiven, the amound put away each year, and the total amount saved
+
+#We have to pay 10%/year for all 20 years, plus the value given by the forgiveness prep fund for each year as an attending
+
+#------------------------------------------
+#Underserved option
+#First thing is it changes the medical school debt value and sets that to zero
+
+pay.per.year(60000, .075, years=16) #only needs UG loans in for the base
+#normal residency pay, normal salary
+
+
+#--------------------------------------------
+#military option --- there are many military variations. We will assume you do your residency at with the military (get paid by them) and that you only stay for the years you need to stay and will ignore anything relating to the years in reserves and will estimate the total value of the 20k signing bonus and the 2200/year at 50k beyond what you would have taken in loans
+
+#income/year is in csv -- add 50k to first year to account for medschool pay/sign bonus
+pay.per.year(60000, .075, years=16) #only needs UG loans in for the base
+
+#need military for PGY 1-X where x is if(res<=5) then 4, elseif(res>=6) then res-1     - after years 1-x switch to physician salary
+
+
+
+
+#***********I THINK THE CURRENT MODELS FAIL IN THAT THEY HAVE US WAIT DURING RES TO MAKE REPAYMENTS BUT FORGET TO HAVE IT GROW OVER RES. NEED TO GO BACK THROUGH FUNCTIONS THAT DO THIS AND ADD GROW RES MANY TIMES INTO THEM**************8
 ```
