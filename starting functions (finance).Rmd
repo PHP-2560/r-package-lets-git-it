@@ -43,7 +43,7 @@ payments <- function(base, interest, payment){ #annual payment made is payment, 
 }
 
   
-payments(100, .07, 12)#testing our function
+payments(600000, .075, 83526)#testing our function
 
 
 
@@ -51,15 +51,16 @@ payments(100, .07, 12)#testing our function
 ```
 
 ```{r}
-income.driven <- function(base, interest,income) {
+income.driven <- function(base, interest,income) { #income needs to be a 20 element vector
       if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
     interest = interest/100
       }
   
-  payment <- income/10 #****ULTIMATELY WE SHOULD CHANGE INCOME TO BE A VECTOR, IT WILL VARY BY YEAR (ESP MOVING FROM RESIDENCY INTO ATTENDINGHOOD) - in the for loop we will then need to call the index year of income***
+  payment <- income/10 
   annual.debt <- vector(length=20)
+  annual.debt[20] <- 0
   for(i in 1:20){
-    base = (base-payment)*(1+interest)
+    base = (base-payment[i])*(1+interest)
     annual.debt[i] <- base
    if(base<0) break
   }
@@ -68,7 +69,7 @@ income.driven <- function(base, interest,income) {
    #total amount paid (before taxes on the forgiven amount) --- print(2*income)
 }
 
-income.driven(100, .07, 5)
+income.driven(100, .07, 70)
 ```
 
 ```{r}
@@ -156,6 +157,7 @@ post.tax.lifetime.earnings(300000, .4, 1300000)
 #how much to pay per year:
     #This will take the debt total grown after res and calculate how much to pay per year to pay off loan after res
 pay.per.year <- function(debt.total, interest, years =20-res) {
+  debt.total= grow(debt.total, interest, n=res)
   testpay = debt.total*interest*3
   for(k in 1:20) {testpay <- testpay*0.95
   DT <- debt.total
@@ -168,14 +170,15 @@ pay.per.year <- function(debt.total, interest, years =20-res) {
   
   print(testpay) #prints how much you need to pay per year
 }
-
+res=3
 pay.per.year(600000, .075, years=16) #this pay.per.year gives us a fixed number for the person to pay during each year of their attendinghood
 
 #the loan amount each year over the years 
 payments(base, interest, payment) #need to then concatanate the growing loan as a vector over the residency years together with this (the shrinking loan over attendinghood), should end with zero debt at 20 years
 
-
-
+grow(600000, .075, n=3)
+k <- payments(745378.1, .075, 77698)
+k
 
 
 
