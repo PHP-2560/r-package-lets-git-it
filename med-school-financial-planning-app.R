@@ -1,5 +1,6 @@
 library(shiny)
 library(ggplot2)
+library(dplyr)
 
 ui <- fluidPage(
   titlePanel("Medical School Financial Planning"),
@@ -33,7 +34,7 @@ ui <- fluidPage(
     )
   ) 
 
-library(dplyr)
+
 
 specialty_res <- function(specialty) {
   res <- specialty_info %>%
