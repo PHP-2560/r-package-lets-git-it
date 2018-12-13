@@ -185,10 +185,13 @@ server <- function(input, output, session) {
       forgiveness.fund.annual_ten[i] = forgiveness.fund.annual_ten[i-1]  + prep.payment.amount
       forgiveness.fund.annual_ten[i] = forgiveness.fund.annual_ten[i]*(1+input$growth_rate)
     } #*this would be the vector of how much you have saved to pay off the final forgiven amount
-    
+
     #combine the two repayments (fed and private) below
     prep.payment <- c(prep.payment, 0,0,0,0,0,0,0,0,0,0)
     fed.remaining <- c(fed.remaining, 0,0,0,0,0,0,0,0,0,0)
+    for(i in 1:20) {
+      if(fed.remaining[i] <= 0) {percent.payment[i]=0}
+    }
     forgiveness.fund.annual_ten<- c(forgiveness.fund.annual_ten, 0,0,0,0,0,0,0,0,0,0) #these three make the important vectors all go to 20 so they work nicely in the df
     
     payment_ten <- vector(length = 20)
@@ -259,6 +262,10 @@ server <- function(input, output, session) {
       forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i]*(1+input$growth_rate)
     } #*this would be the vector of how much you have saved to pay off the final forgiven amount
     
+    for(i in 1:20) {
+      if(fed.remaining[i] <= 0) {percent.payment[i]=0}
+    }
+
     #combine the two repayments (fed and private) below
     payment_twenty <- vector(length = 20)
     for(i in 1:20) {
@@ -465,6 +472,10 @@ server <- function(input, output, session) {
     #combine the two repayments (fed and private) below
     prep.payment <- c(prep.payment, 0,0,0,0,0,0,0,0,0,0)
     fed.remaining <- c(fed.remaining, 0,0,0,0,0,0,0,0,0,0)
+    for(i in 1:20) {
+      if(fed.remaining[i] <= 0) {
+        percent.payment[i] <- 0}
+    }
     forgiveness.fund.annual_ten<- c(forgiveness.fund.annual_ten, 0,0,0,0,0,0,0,0,0,0) #these three make the important vectors all go to 20 so they work nicely in the df
     
     payment_ten <- vector(length = 20)
@@ -534,6 +545,10 @@ server <- function(input, output, session) {
       forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i-1]  + prep.payment.amount
       forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i]*(1+input$growth_rate)
     } #*this would be the vector of how much you have saved to pay off the final forgiven amount
+    
+    for(i in 1:20) {
+      if(fed.remaining[i] <= 0) {percent.payment[i]=0}
+    }
     
     #combine the two repayments (fed and private) below
     payment_twenty <- vector(length = 20)
@@ -749,6 +764,9 @@ server <- function(input, output, session) {
     #combine the two repayments (fed and private) below
     prep.payment <- c(prep.payment, 0,0,0,0,0,0,0,0,0,0)
     fed.remaining <- c(fed.remaining, 0,0,0,0,0,0,0,0,0,0)
+    for(i in 1:20) {
+      if(fed.remaining[i] <= 0) {percent.payment[i]=0}
+    }
     forgiveness.fund.annual_ten<- c(forgiveness.fund.annual_ten, 0,0,0,0,0,0,0,0,0,0) #these three make the important vectors all go to 20 so they work nicely in the df
     
     payment_ten <- vector(length = 20)
@@ -818,6 +836,10 @@ server <- function(input, output, session) {
       forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i-1]  + prep.payment.amount
       forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i]*(1+input$growth_rate)
     } #*this would be the vector of how much you have saved to pay off the final forgiven amount
+    
+    for(i in 1:20) {
+      if(fed.remaining[i] <= 0) {percent.payment[i]=0}
+    }
     
     #combine the two repayments (fed and private) below
     payment_twenty <- vector(length = 20)
