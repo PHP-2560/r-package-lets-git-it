@@ -207,7 +207,7 @@ for (i in 1:res){
 for (k in (res+1):20){
   disposable_ten[k] <- gross[k]*(1-attending_tax)-payment_ten[k]
 }
-disposable_ten[10] <- gross[10]*(1-attending_tax)-stand.repay[10]-percent.payment[10]-prep.payment[10]-(forgiven.amount*attending_tax - forgiveness.fund.annual[10]) #on the last year, you also need to cover the gap between your prep fund and your IRS bill
+disposable_ten[10] <- gross[10]*(1-attending_tax)-stand.repay[10]-percent.payment[10]-prep.payment[10]-(forgiven.amount*attending_tax - forgiveness.fund.annual_ten[10]) #on the last year, you also need to cover the gap between your prep fund and your IRS bill
 cum_disposable_ten <- cumsum(disposable_ten)
 
 debt_left_ten <- priv.remaining + fed.remaining 
