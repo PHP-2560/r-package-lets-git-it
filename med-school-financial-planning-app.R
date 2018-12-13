@@ -19,10 +19,12 @@ ui <- fluidPage(
         #input average interest rate, default is 7.6%
         numericInput("avg_interest_rate", "Average Interest Rate", 0.076),
         #select a specialty, default is internal medicine
-        selectInput("specialty", label = h5("Select a specialty"),
-                    choices = specialty_info$Specialty, selected = specialty_info$Specialty[6]),
+        #selectInput("specialty", label = h5("Select a specialty"),
+                    #choices = specialty_info$Specialty, selected = specialty_info$Specialty[6]),
         #input years of training
         numericInput("PGY_education", "Years of Training", specialty_info$`Years of Training`[6]),
+        #input average attending salary
+        numericInput("avg_attending_salary", "Average Attending Salary", specialty_info$`Annual Salary`[6]),
         #input average residency salary, default is $65,000
         numericInput("avg_residency_salary", "Average Residency Salary", 65000),
         #input residency tax rate, default is 25%
@@ -42,24 +44,97 @@ ui <- fluidPage(
     )
   ) 
 
-server <- function(input, output) {
-  #x-axis of PGY years, y-axis of dollars
-  #1 color is gross income (stop at 20 years)
-  #1 color is disposale income (post-taxes and debt repayment)
-  #1 color is debt repayment per year
+standard_frame <- data.frame()
+
+server <- function(input, output, session) {
   source("specialty_res.R")
   source("specialty_salary.R")
   source("grow.R")
   source("pay.per.year.R")
   source("payments.R")
-  standard_frame <- reactiveValues(df_data = NULL)
   
+  # values <- reactiveValues()
+  # values$res <- specialty_res(input$specialty)
+  # values$salary <- specialty_salary(input$specialty)
+  # values$gross <- vector(length = 20)
+  # for (i in 1:values$res) {
+  #   values$gross[i] <- input$avg_residency_salary
+  # }
+  # for (k in (values$res+1):20) {
+  #   values$gross[k] <- values$salary
+  # }
+  # values$debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
+  # values$debt_payment <- pay.per.year(values$debt_total, input$avg_interest_rate)
+  # values$payments_output_standard <- payments(grow(values$debt_total, input$avg_interest_rate, n = values$res), input$avg_interest_rate, values$debt_payment)
+  # values$debt_payment_standard <- vector(length = 20)
+  # for (i in 1:values$res) {
+  #   values$debt_payment_standard[i] <- 0
+  # }
+  # for (k in (values$res+1):20) {
+  #   values$debt_payment_standard[k] <- values$debt_payment
+  # }
+  # values$total_paid_standard <- cumsum(values$debt_payment_standard) #cumulative payments
+  # values$debt_left_standard <- vector(length = 20)
+  # values$debt_left_standard[1] <- grow(values$debt_total, input$avg_interest_rate)
+  # for (i in 2:values$res) {
+  #   values$debt_left_standard[i] <- grow(values$debt_left_standard[i-1], input$avg_interest_rate)
+  # }
+  # for (k in (values$res+1):20) {
+  #   values$debt_left_standard[k] <- values$payments_output_standard[k-res]
+  # }
+  # values$disposable_standard <- vector(length = 20)
+  # for (i in 1:values$res){
+  #   values$disposable_standard[i] <- values$gross[i]*(1-input$residency_tax)-values$debt_payment_standard[i]
+  # }
+  # for (k in (values$res+1):20){
+  #   values$disposable_standard[k] <- values$gross[k]*(1-input$attending_tax)-values$debt_payment_standard[k]
+  # }
+  # values$cum_disposable_standard <- cumsum(values$disposable_standard)
+
+  #standard_frame <- reactive({data <- data.frame(years, gross(), disposable_standard(), cum_disposable_standard(), debt_left_standard(), debt_payment_standard(), total_paid_standard())})
   observe({
-    res <- specialty_res(input$specialty)
-    salary <- specialty_res(input$specialty)
+    updateNumericInput(session, "undergrad_federal_debt", "Undergraduate Federal Debt", 0)
   })
-  
   observe({
+    updateNumericInput(session, "undergrad_private_debt", "Undergraduate Private Debt", 0)
+  })
+  observe({
+    updateNumericInput(session, "med_federal_debt", "Medical School Federal Debt", 0)
+  })
+  observe({
+    updateNumericInput(session, "med_private_debt", "Medical School Private Debt", 0)
+  })
+  observe({
+    updateNumericInput(session, "avg_interest_rate", "Average Interest Rate", 0.076)
+  })
+  observe({
+    updateSelectInput(session, "specialty", label = h5("Select a specialty"))
+  })
+  observe({
+    updateNumericInput(session, "PGY_education", "Years of Training")
+  })
+  observe({
+    updateNumericInput(session, "avg_attending_salary", "Average Attending Salary")
+  })
+  observe({
+    updateNumericInput(session, "avg_residency_salary", "Average Residency Salary", 65000)
+  })
+  observe({
+    updateNumericInput(session, "residency_tax", "Residency Tax Rate", 0.25)
+  })
+  observe({
+    updateNumericInput(session, "attending_tax", "Attending Tax Rate", 0.35)
+  })
+  observe({
+    updateNumericInput(session, "growth_rate", "Forgiveness Prep Fund Growth Rate", 0.05)
+  })
+
+    #res <- specialty_res(input$specialty)
+    #salary <- specialty_salary(input$specialty)
+  output$debt <- renderPlot({
+    res <- input$PGY_education
+    salary <- input$avg_attending_salary
+    years <- c(1:20)
     gross <- vector(length = 20)
     for (i in 1:res) {
       gross[i] <- input$avg_residency_salary
@@ -67,13 +142,8 @@ server <- function(input, output) {
     for (k in (res+1):20) {
       gross[k] <- salary
     }
-  })
-  
-  observe({
     debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
-  })
-  
-  observe({
+    
     debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
     payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
     debt_payment_standard <- vector(length = 20)
@@ -95,9 +165,7 @@ server <- function(input, output) {
       debt_left_standard[k] <- payments_output_standard[k-res]
     }
     debt_left_standard
-  })
-  
-  observe({
+    
     disposable_standard <- vector(length = 20)
     for (i in 1:res){
       disposable_standard[i] <- gross[i]*(1-input$residency_tax)-debt_payment_standard[i]
@@ -106,66 +174,69 @@ server <- function(input, output) {
       disposable_standard[k] <- gross[k]*(1-input$attending_tax)-debt_payment_standard[k]
     }
     disposable_standard
+    
     cum_disposable_standard <- cumsum(disposable_standard)
+    
+    standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
+    ggplot(standard_frame, aes(x = years)) +
+      geom_line(aes(y = debt_left_standard, color = "Debt Remaining")) +
+      scale_color_manual("",
+                         breaks = c("Debt Remaining"),
+                         values = c("Debt Remaining" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      theme_minimal()
   })
-  standard_frame <- reactive({data <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)})
-  
-  
-  # reactive({
-  #   res <- specialty_res(input$specialty)
-  #   salary <- specialty_salary(input$specialty)
-  #   years <- c(1:20)
-  #   gross <- vector(length = 20)
-  #   for (i in 1:res) {
-  #     gross[i] <- input$avg_residency_salary
-  #   }
-  #   for (k in (res+1):20) {
-  #     gross[k] <- salary
-  #   }
-  #   
-  #   debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
-  #   
-  #   debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
-  #   payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
-  #   debt_payment_standard <- vector(length = 20)
-  #   for (i in 1:res) {
-  #     debt_payment_standard[i] <- 0
-  #   }
-  #   for (k in (res+1):20) {
-  #     debt_payment_standard[k] <- debt_payment
-  #   }
-  #   debt_payment_standard
-  #   total_paid_standard <- cumsum(debt_payment_standard) #cumulative payments
-  #   
-  #   debt_left_standard <- vector(length = 20)
-  #   debt_left_standard[1] <- grow(debt_total, input$avg_interest_rate)
-  #   for (i in 2:res) {
-  #     debt_left_standard[i] <- grow(debt_left_standard[i-1], input$avg_interest_rate)
-  #   }
-  #   for (k in (res+1):20) {
-  #     debt_left_standard[k] <- payments_output_standard[k-res]
-  #   }
-  #   debt_left_standard
-  #   
-  #   disposable_standard <- vector(length = 20)
-  #   for (i in 1:res){
-  #     disposable_standard[i] <- gross[i]*(1-input$residency_tax)-debt_payment_standard[i]
-  #   }
-  #   for (k in (res+1):20){
-  #     disposable_standard[k] <- gross[k]*(1-input$attending_tax)-debt_payment_standard[k]
-  #   }
-  #   disposable_standard
-  #   
-  #   cum_disposable_standard <- cumsum(disposable_standard)
-  #   
-  #   standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
-  # })
-  
-  
-  
+    
   output$year_by_year <- renderPlot({
-
-    ggplot(standard_frame(), aes(x = years)) + 
+    res <- input$PGY_education
+    salary <- input$avg_attending_salary
+    years <- c(1:20)
+    gross <- vector(length = 20)
+    for (i in 1:res) {
+      gross[i] <- input$avg_residency_salary
+    }
+    for (k in (res+1):20) {
+      gross[k] <- salary
+    }
+    debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
+    
+    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
+    payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
+    debt_payment_standard <- vector(length = 20)
+    for (i in 1:res) {
+      debt_payment_standard[i] <- 0
+    }
+    for (k in (res+1):20) {
+      debt_payment_standard[k] <- debt_payment
+    }
+    debt_payment_standard
+    total_paid_standard <- cumsum(debt_payment_standard) #cumulative payments
+    
+    debt_left_standard <- vector(length = 20)
+    debt_left_standard[1] <- grow(debt_total, input$avg_interest_rate)
+    for (i in 2:res) {
+      debt_left_standard[i] <- grow(debt_left_standard[i-1], input$avg_interest_rate)
+    }
+    for (k in (res+1):20) {
+      debt_left_standard[k] <- payments_output_standard[k-res]
+    }
+    debt_left_standard
+    
+    disposable_standard <- vector(length = 20)
+    for (i in 1:res){
+      disposable_standard[i] <- gross[i]*(1-input$residency_tax)-debt_payment_standard[i]
+    }
+    for (k in (res+1):20){
+      disposable_standard[k] <- gross[k]*(1-input$attending_tax)-debt_payment_standard[k]
+    }
+    disposable_standard
+    
+    cum_disposable_standard <- cumsum(disposable_standard)
+    
+    standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
+    ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = gross, color = "Gross Income")) +
       geom_line(aes(y = disposable_standard, color = "Disposable Income")) +
       geom_line(aes(y = debt_payment_standard, color = "Debt Payment")) +
@@ -174,33 +245,71 @@ server <- function(input, output) {
                          values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
       scale_y_continuous(labels = comma) +
       xlab("Years After Medical School Graduation") +
-      ylab("Dollars") + 
+      ylab("Dollars") +
       theme_minimal()
   })
+  
+  
   output$lifetime_earnings <- renderPlot({
-    ggplot(standard_frame(), aes(x = years)) +
+    res <- input$PGY_education
+    salary <- input$avg_attending_salary
+    years <- c(1:20)
+    gross <- vector(length = 20)
+    for (i in 1:res) {
+      gross[i] <- input$avg_residency_salary
+    }
+    for (k in (res+1):20) {
+      gross[k] <- salary
+    }
+
+    debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
+    
+    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
+    payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
+    debt_payment_standard <- vector(length = 20)
+    for (i in 1:res) {
+      debt_payment_standard[i] <- 0
+    }
+    for (k in (res+1):20) {
+      debt_payment_standard[k] <- debt_payment
+    }
+    debt_payment_standard
+    total_paid_standard <- cumsum(debt_payment_standard) #cumulative payments
+    
+    debt_left_standard <- vector(length = 20)
+    debt_left_standard[1] <- grow(debt_total, input$avg_interest_rate)
+    for (i in 2:res) {
+      debt_left_standard[i] <- grow(debt_left_standard[i-1], input$avg_interest_rate)
+    }
+    for (k in (res+1):20) {
+      debt_left_standard[k] <- payments_output_standard[k-res]
+    }
+    debt_left_standard
+    
+    disposable_standard <- vector(length = 20)
+    for (i in 1:res){
+      disposable_standard[i] <- gross[i]*(1-input$residency_tax)-debt_payment_standard[i]
+    }
+    for (k in (res+1):20){
+      disposable_standard[k] <- gross[k]*(1-input$attending_tax)-debt_payment_standard[k]
+    }
+    disposable_standard
+    
+    cum_disposable_standard <- cumsum(disposable_standard)
+    
+    standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
+    ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_standard, color = "Cumulative Disposable Income")) +
       geom_line(aes(y = total_paid_standard, color = "Total Debt Paid")) +
       scale_color_manual("",
                          breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
-                         values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) + 
-      scale_y_continuous(labels = comma) + 
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") + 
-      theme_minimal()
-  })
-  
-  output$debt <- renderPlot({
-    ggplot(standard_frame(), aes(x = years)) +
-      geom_line(aes(y = debt_left_standard, color = "Debt Remaining")) + 
-      scale_color_manual("",
-                         breaks = c("Debt Remaining"),
-                         values = c("Debt Remaining" = "red")) + 
+                         values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
       scale_y_continuous(labels = comma) +
       xlab("Years After Medical School Graduation") +
-      ylab("Dollars") + 
+      ylab("Dollars") +
       theme_minimal()
   })
+
 }
 
 shinyApp(ui = ui, server = server)
