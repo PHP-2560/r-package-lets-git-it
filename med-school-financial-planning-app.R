@@ -96,6 +96,18 @@ server <- function(input, output, session) {
   output$debt <- renderPlot({
     res <- input$PGY_education
     salary <- input$avg_attending_salary
+    in.military <- c(87965, 99726.5, 115671.5, 128496.5, 136504, 141026, 147916.5, 153001, 156988.5, 163579)
+    military.gross <- vector(length=20)
+    
+    if(res<=5) {
+      for(i in 1:res+4) {military.gross[i] <- in.military[i]}#military residency salary}
+      for(j in (res+5):20) {military.gross[j] <- input$avg_attending_salary}#civilian physician salary}
+    }
+    if(res>5) {
+      for(i in 1:(res+(res-1))) {military.gross[i] <- in.military[i]}#military physician salary}
+      for(j in (res+(res-1)):20) {military.gross[j] <- input$avg_attending_salary}#civilian physician salary}
+    }  
+    
     years <- c(1:20)
     gross <- vector(length = 20)
     for (i in 1:res) {
@@ -327,6 +339,47 @@ server <- function(input, output, session) {
     underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
     underserved_frame
     
+    total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
+    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate)
+    
+    military.repay <- vector(length=20)
+    for(i in 1:res) {military.repay[i]=0}
+    for(k in (res+1):20) {
+      military.repay[k] <- military.payment
+    }
+    
+    military.remaining <- vector(length=20)
+    for(i in 1:res) {
+      military.remaining[i] <- grow(total.debt.military, input$avg_interest_rate, n=i)
+    }
+    for(k in (res+1):20) {
+      military.remaining[k] <- (military.remaining[k-1] - military.payment)
+      military.remaining[k] <- military.remaining[k]*(1+input$avg_interest_rate)
+    }
+    
+    
+    #need disposable
+    disposable_military <-  vector(length = 20)
+    for (i in 1:res){
+      disposable_military[i] <- military.gross[i]*(1-input$residency_tax)
+    }
+    disposable_military[1] <- disposable_military[1]+50000 #need to add 50k for signing bonus and UG salary
+    for (k in (res+1):20){
+      disposable_military[k] <- military.gross[k]*(1-input$attending_tax)-military.repay[k]
+    }
+    
+    #need cumDisposable 
+    cum_disposable_military <- cumsum(disposable_military)
+    
+    #debt_left is "military.remaining"
+    #payment_military is "military.repay"
+    #need cummilitaryrepay
+    total_paid_military <- cumsum(military.repay)
+    
+    
+    military_frame <- data.frame(years, military.gross, disposable_military, cum_disposable_military, military.remaining, military.repay, total_paid_military)
+    
+    
     p1 <- ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = debt_left_standard, color = "Debt Remaining")) +
       scale_color_manual("",
@@ -371,14 +424,37 @@ server <- function(input, output, session) {
       ggtitle("NHSC (Underserved) Repayment Option") + 
       theme_minimal()
     
+    p5 <- ggplot(military_frame, aes(x = years)) +
+      geom_line(aes(y = military.remaining, color = "Debt Remaining")) +
+      scale_color_manual("",
+                         breaks = c("Debt Remaining"),
+                         values = c("Debt Remaining" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      ggtitle("Military Repayment Option") + 
+      theme_minimal()
     
     
-    ggarrange(p1, p2, p3, p4)
+    
+    ggarrange(p1, p2, p3, p4, p5)
   })
     
   output$year_by_year <- renderPlot({
     res <- input$PGY_education
     salary <- input$avg_attending_salary
+    in.military <- c(87965, 99726.5, 115671.5, 128496.5, 136504, 141026, 147916.5, 153001, 156988.5, 163579)
+    military.gross <- vector(length=20)
+    
+    if(res<=5) {
+      for(i in 1:res+4) {military.gross[i] <- in.military[i]}#military residency salary}
+      for(j in (res+5):20) {military.gross[j] <- input$avg_attending_salary}#civilian physician salary}
+    }
+    if(res>5) {
+      for(i in 1:(res+(res-1))) {military.gross[i] <- in.military[i]}#military physician salary}
+      for(j in (res+(res-1)):20) {military.gross[j] <- input$avg_attending_salary}#civilian physician salary}
+    }  
+    
     years <- c(1:20)
     gross <- vector(length = 20)
     for (i in 1:res) {
@@ -611,6 +687,47 @@ server <- function(input, output, session) {
     underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
     underserved_frame
     
+    total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
+    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate)
+    
+    military.repay <- vector(length=20)
+    for(i in 1:res) {military.repay[i]=0}
+    for(k in (res+1):20) {
+      military.repay[k] <- military.payment
+    }
+    
+    military.remaining <- vector(length=20)
+    for(i in 1:res) {
+      military.remaining[i] <- grow(total.debt.military, input$avg_interest_rate, n=i)
+    }
+    for(k in (res+1):20) {
+      military.remaining[k] <- (military.remaining[k-1] - military.payment)
+      military.remaining[k] <- military.remaining[k]*(1+input$avg_interest_rate)
+    }
+    
+    
+    #need disposable
+    disposable_military <-  vector(length = 20)
+    for (i in 1:res){
+      disposable_military[i] <- military.gross[i]*(1-input$residency_tax)
+    }
+    disposable_military[1] <- disposable_military[1]+50000 #need to add 50k for signing bonus and UG salary
+    for (k in (res+1):20){
+      disposable_military[k] <- military.gross[k]*(1-input$attending_tax)-military.repay[k]
+    }
+    
+    #need cumDisposable 
+    cum_disposable_military <- cumsum(disposable_military)
+    
+    #debt_left is "military.remaining"
+    #payment_military is "military.repay"
+    #need cummilitaryrepay
+    total_paid_military <- cumsum(military.repay)
+    
+    
+    military_frame <- data.frame(years, military.gross, disposable_military, cum_disposable_military, military.remaining, military.repay, total_paid_military)
+    
+    
     p1 <- ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = gross, color = "Gross Income")) +
       geom_line(aes(y = disposable_standard, color = "Disposable Income")) +
@@ -663,13 +780,38 @@ server <- function(input, output, session) {
       ggtitle("NHSC (Underserved) Repayment Option") + 
       theme_minimal()
     
-    ggarrange(p1, p2, p3, p4)
+    p5 <- ggplot(military_frame, aes(x = years)) +
+      geom_line(aes(y = gross, color = "Gross Income")) +
+      geom_line(aes(y = disposable_military, color = "Disposable Income")) +
+      geom_line(aes(y = military.repay, color = "Debt Payment")) +
+      scale_color_manual("",
+                         breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
+                         values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      ggtitle("Military Repayment Option") + 
+      theme_minimal()
+    
+    ggarrange(p1, p2, p3, p4, p5)
   })
   
   
   output$lifetime_earnings <- renderPlot({
     res <- input$PGY_education
     salary <- input$avg_attending_salary
+    in.military <- c(87965, 99726.5, 115671.5, 128496.5, 136504, 141026, 147916.5, 153001, 156988.5, 163579)
+    military.gross <- vector(length=20)
+    
+    if(res<=5) {
+      for(i in 1:res+4) {military.gross[i] <- in.military[i]}#military residency salary}
+      for(j in (res+5):20) {military.gross[j] <- input$avg_attending_salary}#civilian physician salary}
+    }
+    if(res>5) {
+      for(i in 1:(res+(res-1))) {military.gross[i] <- in.military[i]}#military physician salary}
+      for(j in (res+(res-1)):20) {military.gross[j] <- input$avg_attending_salary}#civilian physician salary}
+    }  
+    
     years <- c(1:20)
     gross <- vector(length = 20)
     for (i in 1:res) {
@@ -902,6 +1044,47 @@ server <- function(input, output, session) {
     underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
     underserved_frame
     
+    total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
+    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate)
+    
+    military.repay <- vector(length=20)
+    for(i in 1:res) {military.repay[i]=0}
+    for(k in (res+1):20) {
+      military.repay[k] <- military.payment
+    }
+    
+    military.remaining <- vector(length=20)
+    for(i in 1:res) {
+      military.remaining[i] <- grow(total.debt.military, input$avg_interest_rate, n=i)
+    }
+    for(k in (res+1):20) {
+      military.remaining[k] <- (military.remaining[k-1] - military.payment)
+      military.remaining[k] <- military.remaining[k]*(1+input$avg_interest_rate)
+    }
+    
+    
+    #need disposable
+    disposable_military <-  vector(length = 20)
+    for (i in 1:res){
+      disposable_military[i] <- military.gross[i]*(1-input$residency_tax)
+    }
+    disposable_military[1] <- disposable_military[1]+50000 #need to add 50k for signing bonus and UG salary
+    for (k in (res+1):20){
+      disposable_military[k] <- military.gross[k]*(1-input$attending_tax)-military.repay[k]
+    }
+    
+    #need cumDisposable 
+    cum_disposable_military <- cumsum(disposable_military)
+    
+    #debt_left is "military.remaining"
+    #payment_military is "military.repay"
+    #need cummilitaryrepay
+    total_paid_military <- cumsum(military.repay)
+    
+    
+    military_frame <- data.frame(years, military.gross, disposable_military, cum_disposable_military, military.remaining, military.repay, total_paid_military)
+    
+    
     p1 <- ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_standard, color = "Cumulative Disposable Income")) +
       geom_line(aes(y = total_paid_standard, color = "Total Debt Paid")) +
@@ -950,7 +1133,19 @@ server <- function(input, output, session) {
       ggtitle("NHSC (Underserved) Repayment Option") +
       theme_minimal()
     
-    ggarrange(p1, p2, p3, p4)
+    p5 <- ggplot(military_frame, aes(x = years)) +
+      geom_line(aes(y = cum_disposable_military, color = "Cumulative Disposable Income")) +
+      geom_line(aes(y = total_paid_military, color = "Total Debt Paid")) +
+      scale_color_manual("",
+                         breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
+                         values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      ggtitle("Military Repayment Option") +
+      theme_minimal()
+    
+    ggarrange(p1, p2, p3, p4, p5)
     
   })
 
