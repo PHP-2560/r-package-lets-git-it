@@ -11,10 +11,10 @@ years <- c(1:20)
 
 #FOR PRIVATE DEBT
 private.total <- undergrad_private_debt + med_private_debt #need to make this a thing
-private.total <- 100000 #initializing a value to work with
+private.total <- 0 #initializing a value to work with
 
 federal.total <- undergrad_federal_debt + med_federal_debt #need this value
-federal.total <- 400000 #initializing a value to work with
+federal.total <- 0 #initializing a value to work with
 
 
 #Next I will launch the needed function income.driven and forgiveness.prep.fund as well as pay.per.year
@@ -163,6 +163,11 @@ for(i in (res+1):20) {
 } #*this would be the vector of how much you have saved to pay off the final forgiven amount
 
 
+
+
+for(i in 1:20) {
+  if(federal.remaining[i] < 0) {percent.payment[i]=0}
+}
 
 
 
