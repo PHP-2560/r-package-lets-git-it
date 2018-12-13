@@ -198,3 +198,34 @@ pay.per.year <- function(debt.total, interest, years =20-res) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+res <- 8
+
+in.military <- c(87965, 99726.5, 115671.5, 128496.5, 136504, 141026, 147916.5, 153001, 156988.5, 163579, 168533.5, 176593, 180956, 183542, 187181.5, 198565, 199579.5, 206582, 213525.5, 206792.5)
+military.gross <- vector(length=20)
+if(res<=5) {
+  for(i in 1:(res+4)) {military.gross[i] <- in.military[i]}#military residency salary}
+  for(j in (res+5):20) {military.gross[j] <- 230000}#civilian physician salary}
+}
+if(res>5) {
+  for(i in 1:(res+(res-1))) {military.gross[i] <- in.military[i]}#military physician salary}
+  for(j in (res+res):20) {military.gross[j] <- 230000}#civilian physician salary}
+}  
+
+military.gross
+in.military
+
+
+res
