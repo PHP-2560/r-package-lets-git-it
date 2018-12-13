@@ -104,6 +104,12 @@ pay.per.year <- function(debt.total, interest, years =20-res) {
   print(testpay) #prints how much you need to pay per year
 }
 
+grow(600000,.075,n=3)
+res
+
+pay.per.year(600000,.075)
+payments(745378,.075, 83526)
+
 
 
 

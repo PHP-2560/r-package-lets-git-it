@@ -1,7 +1,6 @@
 #how much to pay per year:
 #This will take the debt total grown after res and calculate how much to pay per year to pay off loan after res
-pay.per.year <- function(debt.total, interest, res, years = 20) {
-  years <- years - res
+pay.per.year <- function(debt.total, interest, years =20-res) {
   debt.total.grown = grow(debt.total, interest, n = res)
   testpay = debt.total*interest*3
   for(k in 1:20) {testpay <- testpay*0.95

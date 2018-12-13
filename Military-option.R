@@ -13,7 +13,7 @@ years <- c(1:20)
 
 total.debt.military <- undergrad_private_debt + undergrad_federal_debt 
 #this is the UG debt total
-total.debt.military <- 100000 #initializing a value
+total.debt.military <- 00000 #initializing a value
 
 
 
