@@ -5,6 +5,7 @@ library(dplyr)
 library(scales)
 library(ggpubr)
 
+
 ui <- fluidPage(
   titlePanel("Medical School Financial Planning"),
     sidebarLayout(
@@ -23,9 +24,9 @@ ui <- fluidPage(
         #selectInput("specialty", label = h5("Select a specialty"),
                     #choices = specialty_info$Specialty, selected = specialty_info$Specialty[6]),
         #input years of training
-        numericInput("PGY_education", "Years of Training", specialty_info$`Years of Training`[6]),
+        numericInput("PGY_education", "Years of Training", 3),
         #input average attending salary
-        numericInput("avg_attending_salary", "Average Attending Salary", specialty_info$`Annual Salary`[6]),
+        numericInput("avg_attending_salary", "Average Attending Salary", 230000),
         #input average residency salary, default is $65,000
         numericInput("avg_residency_salary", "Average Residency Salary", 65000),
         #input residency tax rate, default is 25%
@@ -45,14 +46,12 @@ ui <- fluidPage(
     )
   ) 
 
-standard_frame <- data.frame()
-
 server <- function(input, output, session) {
   source("specialty_res.R")
   source("specialty_salary.R")
   source("grow.R")
-  source("pay.per.year.R")
   source("payments.R")
+  source("pay.per.year.R")
   source("income.driven.R")
   source("income.driven.vector.R")
   source("forgiveness.prep.fund.R")
@@ -118,7 +117,7 @@ server <- function(input, output, session) {
     }
     debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
     
-    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
+    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
     payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
     debt_payment_standard <- vector(length = 20)
     for (i in 1:res) {
@@ -158,7 +157,7 @@ server <- function(input, output, session) {
     
     federal.total <- input$undergrad_federal_debt + input$med_federal_debt #need this value
     
-    priv.payment <- pay.per.year(private.total, input$avg_interest_rate)
+    priv.payment <- pay.per.year(private.total, input$avg_interest_rate, res, years = 20)
     
     stand.repay <- vector(length=20)
     for(i in 1:res) {stand.repay[i]=0}
@@ -234,7 +233,7 @@ server <- function(input, output, session) {
     #first things first, if they have private loans, they will need to repay these in the 'standard' way 
     #*********************INSERT THIS REPAYMENT************
     #create stand.repay vector (payment per year)
-    priv.payment <- pay.per.year(private.total, input$avg_interest_rate)
+    priv.payment <- pay.per.year(private.total, input$avg_interest_rate, res, years = 20)
     
     stand.repay <- vector(length=20)
     for(i in 1:res) {stand.repay[i]=0}
@@ -302,7 +301,7 @@ server <- function(input, output, session) {
     #UNDERSERVED REPAYMENT OPTION
     total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
     
-    underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate)
+    underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
     
     underserved.repay <- vector(length=20)
     for(i in 1:res) {underserved.repay[i]=0}
@@ -340,7 +339,7 @@ server <- function(input, output, session) {
     underserved_frame
     
     total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
-    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate)
+    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate, res, years = 20)
     
     military.repay <- vector(length=20)
     for(i in 1:res) {military.repay[i]=0}
@@ -465,7 +464,7 @@ server <- function(input, output, session) {
     }
     debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
     
-    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
+    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
     payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
     debt_payment_standard <- vector(length = 20)
     for (i in 1:res) {
@@ -505,7 +504,7 @@ server <- function(input, output, session) {
     
     federal.total <- input$undergrad_federal_debt + input$med_federal_debt #need this value
     
-    priv.payment <- pay.per.year(private.total, input$avg_interest_rate)
+    priv.payment <- pay.per.year(private.total, input$avg_interest_rate, res, years = 20)
     
     stand.repay <- vector(length=20)
     for(i in 1:res) {stand.repay[i]=0}
@@ -582,7 +581,7 @@ server <- function(input, output, session) {
     #first things first, if they have private loans, they will need to repay these in the 'standard' way 
     #*********************INSERT THIS REPAYMENT************
     #create stand.repay vector (payment per year)
-    priv.payment <- pay.per.year(private.total, input$avg_interest_rate)
+    priv.payment <- pay.per.year(private.total, input$avg_interest_rate, res, years = 20)
     
     stand.repay <- vector(length=20)
     for(i in 1:res) {stand.repay[i]=0}
@@ -650,7 +649,7 @@ server <- function(input, output, session) {
     #UNDERSERVED REPAYMENT OPTION
     total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
     
-    underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate)
+    underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
     
     underserved.repay <- vector(length=20)
     for(i in 1:res) {underserved.repay[i]=0}
@@ -688,7 +687,7 @@ server <- function(input, output, session) {
     underserved_frame
     
     total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
-    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate)
+    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate, res, years = 20)
     
     military.repay <- vector(length=20)
     for(i in 1:res) {military.repay[i]=0}
@@ -823,7 +822,7 @@ server <- function(input, output, session) {
 
     debt_total <- input$undergrad_federal_debt + input$undergrad_private_debt + input$med_federal_debt + input$med_private_debt
     
-    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate)
+    debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
     payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
     debt_payment_standard <- vector(length = 20)
     for (i in 1:res) {
@@ -863,7 +862,7 @@ server <- function(input, output, session) {
     
     federal.total <- input$undergrad_federal_debt + input$med_federal_debt #need this value
     
-    priv.payment <- pay.per.year(private.total, input$avg_interest_rate)
+    priv.payment <- pay.per.year(private.total, input$avg_interest_rate, res, years = 20)
     
     stand.repay <- vector(length=20)
     for(i in 1:res) {stand.repay[i]=0}
@@ -939,7 +938,7 @@ server <- function(input, output, session) {
     #first things first, if they have private loans, they will need to repay these in the 'standard' way 
     #*********************INSERT THIS REPAYMENT************
     #create stand.repay vector (payment per year)
-    priv.payment <- pay.per.year(private.total, input$avg_interest_rate)
+    priv.payment <- pay.per.year(private.total, input$avg_interest_rate, res, years = 20)
     
     stand.repay <- vector(length=20)
     for(i in 1:res) {stand.repay[i]=0}
@@ -1007,7 +1006,7 @@ server <- function(input, output, session) {
     #UNDERSERVED REPAYMENT OPTION
     total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
     
-    underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate)
+    underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
     
     underserved.repay <- vector(length=20)
     for(i in 1:res) {underserved.repay[i]=0}
@@ -1045,7 +1044,7 @@ server <- function(input, output, session) {
     underserved_frame
     
     total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
-    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate)
+    military.payment <- pay.per.year(total.debt.military, input$avg_interest_rate, res, years = 20)
     
     military.repay <- vector(length=20)
     for(i in 1:res) {military.repay[i]=0}
@@ -1148,7 +1147,6 @@ server <- function(input, output, session) {
     ggarrange(p1, p2, p3, p4, p5)
     
   })
-
 }
 
 shinyApp(ui = ui, server = server)
