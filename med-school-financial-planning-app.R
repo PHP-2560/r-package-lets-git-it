@@ -3,6 +3,7 @@ library(ggplot2)
 library(ggthemes)
 library(dplyr)
 library(scales)
+library(ggpubr)
 
 ui <- fluidPage(
   titlePanel("Medical School Financial Planning"),
@@ -210,7 +211,7 @@ server <- function(input, output, session) {
     
     ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
     
-    ggplot(standard_frame, aes(x = years)) +
+    p1 <- ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = debt_left_standard, color = "Debt Remaining")) +
       scale_color_manual("",
                          breaks = c("Debt Remaining"),
@@ -218,7 +219,21 @@ server <- function(input, output, session) {
       scale_y_continuous(labels = comma) +
       xlab("Years After Medical School Graduation") +
       ylab("Dollars") +
+      ggtitle("Standard Repayment Option") + 
       theme_minimal()
+    
+    p2 <- ggplot(ten_year_frame, aes(x = years)) +
+      geom_line(aes(y = debt_left_ten, color = "Debt Remaining")) +
+      scale_color_manual("",
+                         breaks = c("Debt Remaining"),
+                         values = c("Debt Remaining" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      ggtitle("10-Year 10% Repayment Option") + 
+      theme_minimal()
+    
+    ggarrange(p1, p2)
   })
     
   output$year_by_year <- renderPlot({
@@ -339,8 +354,7 @@ server <- function(input, output, session) {
     
     ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
     
-    
-    ggplot(standard_frame, aes(x = years)) +
+    p1 <- ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = gross, color = "Gross Income")) +
       geom_line(aes(y = disposable_standard, color = "Disposable Income")) +
       geom_line(aes(y = debt_payment_standard, color = "Debt Payment")) +
@@ -350,7 +364,23 @@ server <- function(input, output, session) {
       scale_y_continuous(labels = comma) +
       xlab("Years After Medical School Graduation") +
       ylab("Dollars") +
+      ggtitle("Standard Repayment Option") + 
       theme_minimal()
+    
+    p2 <- ggplot(ten_year_frame, aes(x = years)) +
+      geom_line(aes(y = gross, color = "Gross Income")) +
+      geom_line(aes(y = disposable_ten, color = "Disposable Income")) +
+      geom_line(aes(y = payment_ten, color = "Debt Payment")) +
+      scale_color_manual("",
+                         breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
+                         values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      ggtitle("10-Year 10% Repayment Option") + 
+      theme_minimal()
+    
+    ggarrange(p1, p2)
   })
   
   
@@ -473,8 +503,7 @@ server <- function(input, output, session) {
     
     ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
     
-    
-    ggplot(standard_frame, aes(x = years)) +
+    p1 <- ggplot(standard_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_standard, color = "Cumulative Disposable Income")) +
       geom_line(aes(y = total_paid_standard, color = "Total Debt Paid")) +
       scale_color_manual("",
@@ -483,7 +512,23 @@ server <- function(input, output, session) {
       scale_y_continuous(labels = comma) +
       xlab("Years After Medical School Graduation") +
       ylab("Dollars") +
+      ggtitle("Standard Repayment Option") + 
       theme_minimal()
+    
+    p2 <- ggplot(ten_year_frame, aes(x = years)) +
+      geom_line(aes(y = cum_disposable_ten, color = "Cumulative Disposable Income")) +
+      geom_line(aes(y = total_paid_ten, color = "Total Debt Paid")) +
+      scale_color_manual("",
+                         breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
+                         values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
+      scale_y_continuous(labels = comma) +
+      xlab("Years After Medical School Graduation") +
+      ylab("Dollars") +
+      ggtitle("10-Year 10% Repayment Option") +
+      theme_minimal()
+    
+    ggarrange(p1, p2)
+    
   })
 
 }
