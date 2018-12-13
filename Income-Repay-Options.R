@@ -166,7 +166,7 @@ for(i in (res+1):20) {
 
 
 for(i in 1:20) {
-  if(federal.remaining[i] < 0) {percent.payment[i]=0}
+  if(fed.remaining[i] <= 0) {percent.payment[i]<-0}
 }
 
 
