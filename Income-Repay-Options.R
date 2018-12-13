@@ -4,6 +4,8 @@ attending_tax <- 0.35
 residency_tax <- 0.25
 growth_rate <-.05
 res <- 4
+years <- c(1:20)
+#just initializing values above for debugging below
 
 #STARTING WITH 20 YEAR:
 
@@ -153,11 +155,11 @@ prep.payment <- vector(length = 20)
 fed.remaining <- income.driven.vector(federal.total, interest_rate_avg, income=gross) #this gives how much of the fed debt is present each year
 
 
-forgiveness.fund.annual<- vector(length = 20)
+forgiveness.fund.annual_twenty<- vector(length = 20)
 forgiveness.fund.annual[1:res] <- 0
 for(i in (res+1):20) {
-  forgiveness.fund.annual[i] = forgiveness.fund.annual[i-1]  + prep.payment.amount
-  forgiveness.fund.annual[i] = forgiveness.fund.annual[i]*(1+growth_rate)
+  forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i-1]  + prep.payment.amount
+  forgiveness.fund.annual_twenty[i] = forgiveness.fund.annual_twenty[i]*(1+growth_rate)
 } #*this would be the vector of how much you have saved to pay off the final forgiven amount
 
 
@@ -198,7 +200,7 @@ for (i in 1:res){
 for (k in (res+1):19){
   disposable_twenty[k] <- gross[k]*(1-attending_tax)-payment_twenty[k]
 }
-disposable_twenty[20] <- gross[20]*(1-attending_tax)-stand.repay[20]-percent.payment[20]-prep.payment[20]-(forgiven.amount*attending_tax - forgiveness.fund.annual[20]) #on the last year, you also need to cover the gap between your prep fund and your IRS bill
+disposable_twenty[20] <- gross[20]*(1-attending_tax)-stand.repay[20]-percent.payment[20]-prep.payment[20]-(forgiven.amount*attending_tax - forgiveness.fund.annual_twenty[20]) #on the last year, you also need to cover the gap between your prep fund and your IRS bill
 cum_disposable_twenty <- cumsum(disposable_twenty)
 
 debt_left_twenty <- priv.remaining + fed.remaining 
@@ -216,9 +218,12 @@ disposable_twenty
 cum_disposable_twenty
 debt_left_twenty
 
+
 standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
 
 ten_year_frame <- data.frame(years, gross)
-twenty_year_frame <- data.frame(years, gross, )
+twenty_year_frame <- data.frame(years, gross, disposable_twenty, cum_disposable_twenty, debt_left_twenty, payment_twenty, total_paid_twenty, forgiveness.fund.annual_twenty)
 military_frame <- data.frame(years, gross)
 underserved_frame <- data.frame(years, gross)
+
+twenty_year_frame
