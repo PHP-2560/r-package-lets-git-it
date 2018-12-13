@@ -178,7 +178,7 @@ server <- function(input, output, session) {
     percent.payment <- gross[1:10]*0.1
     percent.payment <- c(percent.payment, 0,0,0,0,0,0,0,0,0,0)
     forgiven.amount <- income.driven(federal.total, input$avg_interest_rate, income=gross, plan = 10) 
-    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, years = 10, print.saved=0)
+    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, res, years = 10, print.saved=0)
     prep.payment <- vector(length = 10)
     for(i in 1:res){
       prep.payment[i]=0 
@@ -254,7 +254,7 @@ server <- function(input, output, session) {
     #gross should have already been called
     percent.payment <- gross*0.1
     forgiven.amount <- income.driven(federal.total, input$avg_interest_rate, income=gross) 
-    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, print.saved=0)
+    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, res, print.saved=0)
     prep.payment <- vector(length = 20)
     for(i in 1:res){
       prep.payment[i]=0 
@@ -525,7 +525,7 @@ server <- function(input, output, session) {
     percent.payment <- gross[1:10]*0.1
     percent.payment <- c(percent.payment, 0,0,0,0,0,0,0,0,0,0)
     forgiven.amount <- income.driven(federal.total, input$avg_interest_rate, income=gross, plan = 10) 
-    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, years = 10, print.saved=0)
+    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, res, years = 10, print.saved=0)
     prep.payment <- vector(length = 10)
     for(i in 1:res){
       prep.payment[i]=0 
@@ -602,7 +602,7 @@ server <- function(input, output, session) {
     #gross should have already been called
     percent.payment <- gross*0.1
     forgiven.amount <- income.driven(federal.total, input$avg_interest_rate, income=gross) 
-    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, print.saved=0)
+    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, res, print.saved=0)
     prep.payment <- vector(length = 20)
     for(i in 1:res){
       prep.payment[i]=0 
@@ -883,7 +883,7 @@ server <- function(input, output, session) {
     percent.payment <- gross[1:10]*0.1
     percent.payment <- c(percent.payment, 0,0,0,0,0,0,0,0,0,0)
     forgiven.amount <- income.driven(federal.total, input$avg_interest_rate, income=gross, plan = 10) 
-    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, years = 10, print.saved=0)
+    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, res, years = 10, print.saved=0)
     prep.payment <- vector(length = 10)
     for(i in 1:res){
       prep.payment[i]=0 
@@ -959,7 +959,7 @@ server <- function(input, output, session) {
     #gross should have already been called
     percent.payment <- gross*0.1
     forgiven.amount <- income.driven(federal.total, input$avg_interest_rate, income=gross) 
-    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, print.saved=0)
+    prep.payment.amount <- forgiveness.prep.fund(forgiven.amount, input$growth_rate, input$attending_tax, res, print.saved=0)
     prep.payment <- vector(length = 20)
     for(i in 1:res){
       prep.payment[i]=0 
