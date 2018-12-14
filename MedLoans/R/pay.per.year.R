@@ -1,5 +1,16 @@
-#how much to pay per year:
-#This will take the debt total grown after res and calculate how much to pay per year to pay off loan after res
+#' A Pay Per Year Function
+#'
+#' This function allows you calculate how much you need to pay per year
+#' to pay off your loans after residency.
+#' @param debt.total The total amount of debt you have remaining.
+#' @param interest Interest rate on the loan.
+#' @param res The length of your residency.
+#' @param years The timeframe you want to pay off your debt in. Default is 20.
+#' @keywords debt, interest
+#' @export
+#' @examples
+#' pay.per.year()
+
 pay.per.year <- function(debt.total, interest, res, years = 20) {
   years = years - res
   debt.total.grown = grow(debt.total, interest, n = res)

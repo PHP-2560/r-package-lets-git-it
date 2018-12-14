@@ -1,3 +1,14 @@
+#' A Payments Function
+#'
+#' This function allows you to keep track of your payments toward your debt.
+#' @param base Starting value of the loan at time 0.
+#' @param interest Interest rate on the loan.
+#' @param payment The annual payment you intend to make.
+#' @keywords debt, interest
+#' @export
+#' @examples
+#' payments()
+
 payments <- function(base, interest, payment){ #annual payment made is payment, base is the debt, interest is the rate at which the debt grows
   if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
     interest = interest/100
