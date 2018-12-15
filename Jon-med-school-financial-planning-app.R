@@ -1438,7 +1438,11 @@ output$Repayments <- renderPrint({
   
   cat("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
   cat("Using the standard repayment plan (in which you pay back the entirety of your loans), you will pay $", total_paid_standard[20], "in total. This will work out to an average of $", stand.repay[1], "per year during residency and $", stand.repay[9], "during attendinghood. After taxes this means you will make an average of $", disposable_standard[2], " per year during residency, and $", disposable_standard[9], "per year during attendinghood (that is salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_standard[20], ".")
-  })
+  cat("Using the 10-year repayment plan (in which you must work at a 401(c) and then must pay back the entirety of your private loans and pay 10% of your salary for 10 years), you will pay $", total_paid_ten[20], "in total. This will work out to an average of $", payment_ten[1], "per year during residency, $", payment_ten[9], "during attendinghood, and", payment_ten[19], "after completing your 10-years of repayments. After taxes this means you will make an average of $", disposable_ten[2], " per year during residency, $", disposable_ten[9], "per year during attendinghood, and $", disposable_ten[19], "after completing your 10 years repaying 10% of your income (these values are your salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_ten[20], ".")
+  
+  
+  
+    })
 }
 
 
