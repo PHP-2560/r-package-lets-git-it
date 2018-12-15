@@ -1,6 +1,6 @@
 ---
 title: "Pay Per Year Vignette"
-author: "Jon Spiegel"
+author: "Jon Spiegel and Kevin Chen"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -16,40 +16,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+The function `pay.per.year()` takes in your debt, its interest rate, your number of residency years, and the number of years after medical school at which point you would like to be done repaying all of your debt and returns the amount you need to pay per year to achieve this goal. It is assumed here that you will not be making payments during residency.
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+For example, say you owed 400,000 USD growing at a rate of 7.5% per year, have a 3-year residency, and want to finish paying 20 years after medical school. Then you would have:
 
 ```{r, fig.show='hold'}
-#pay.per.year takes in your debt, its interest rate, your number of residency years, and the number of years after medical school at which point you would like to be done repaying your debt is and returns the amount you need to pay per year to achieve this goal. It is assumed here that you will not be making payments during residency.
-
-#For example, say you owed $400,000 growing at 7.5% per year, have a 3 year residency, and want to finish paying 20 years after medical school
+library(MedLoans)
 pay.per.year(400000, .075, 3, years = 20)
+```
+The last output value from `pay.per.year()` is the one that matters. Here, we see we would need to pay 48,632.41 USD per year for the first 17 years after residency in order to pay off our medical school debt.
+    
+The output from `pay.per.year()` can be tested using the functions `grow()` and `payments()`. First, grow the principle debt by however many years you will be in residency. Then put this grown value into `payments()`, with the appropirate interest rate and the payment output from `pay.per.year()`. The results should agree; for example, having it take you 20 minus the number of your residency years to finish your repayments at that rate. An example corresponding to this is shown below:
 
-#The last output value from pay.per.year is the one that matters. Here we see we would need to pay $48,632 per year for the first 17 years after residency in order to pay off our medical school debt
-
-
-#The output from pay.per.year can be tested using grow and payments. First grow the principle debt by however many years you will be in residency. Then put this grown value into payments, with the appropirate interest rate and the payment output from pay.per.year. The results should agree (for example having it take you 20-residency many years to finish your repayments at that rate). An example corresponding to the above is shown below
+```{r, fig.show='hold'}
 grow(400000, .075, 3)
 payments(496918.8, .075, 48632)
 ```
-
-
