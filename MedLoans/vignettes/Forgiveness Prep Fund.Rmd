@@ -1,0 +1,58 @@
+---
+title: "Forgiveness Prep Fund"
+author: "Jon Spiegel"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+#This function takes in the amount of money ultimately forgiven, the rate at which our savings with grow, the tax rate, the number of years in residency and the total number of years (res and not) between graduating and paying off the tax bill on the forgiven loan amount and returns how much needs to be put away per year by the person taking out the loan in order to cover their ultimate tax bill. 
+#For example, suppose somebody borrowed $400,000 from the federal government and is becoming an oncologist (residency =5 years, average salary =$353,000)
+#We will assume they borrowed at a rate of 7.5% and that they will pay it back over 20 years
+#first we will need to find how much of their loan will be forgiven. We can find this using income.driven
+    income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+    income.driven(400000,.075,income, plan=20)
+#this gives us a final forgiven amount of $545732.1
+
+forgiveness.prep.fund(545732.1, .05, .35, 5, years=20, print.saved=0)
+#this tells us that we need to pay $8064.708 per year for each year after residency in order to cover the tax bill on the forgiven $545,732
+
+
+#if we use print.saved=1, we can see that we owe $182,726 to the IRS in the end
+forgiveness.prep.fund(545732.1, .05, .35, 5, years=20, print.saved=1)
+```
+
+

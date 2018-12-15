@@ -31,3 +31,4 @@ forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, res, y
   }
   print(test) #prints how much you need to save per year
 } 
+devtools::use_vignette("my-vignette")
