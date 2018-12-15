@@ -1,4 +1,5 @@
 income.driven.vector <- function(base, interest,income, plan = 20) { #income needs to be a 20 element vector
+ 
   payment <- income/10 
   annual.debt <- vector(length=plan)
   annual.debt[plan] <- 0
