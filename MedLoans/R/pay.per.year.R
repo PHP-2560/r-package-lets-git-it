@@ -12,6 +12,9 @@
 #' pay.per.year()
 
 pay.per.year <- function(debt.total, interest, res, years = 20) {
+  if(!(debt.total>0)) {warning("Did you provide a positive value for debt.total?")}
+  if(interest < -1 || interest>1) {interest = interest/100}
+  if(!(res>=0 && res<=12)) {warning("Did you provide a reasonable value for res length?")}
   years = years - res
   debt.total.grown = grow(debt.total, interest, n = res)
   testpay = debt.total*interest*3

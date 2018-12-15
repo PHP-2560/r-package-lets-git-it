@@ -10,9 +10,9 @@
 #' payments()
 
 payments <- function(base, interest, payment){ #annual payment made is payment, base is the debt, interest is the rate at which the debt grows
-  if(interest < -1 | interest > 1) { #in case someone misenters interest as whole number instead of decimal form
-    interest = interest/100
-  }
+  if(!(base>0)) {warning("Did you provide a positive value for base?")}
+  if(interest < -1 || interest>1) {interest = interest/100}
+  if(!(payment>0)) {warning("Did you provide a positive annual payment?")}
   
   annual.debt <- numeric() #initialize the annual.debt vector
   for(i in 1:100){
