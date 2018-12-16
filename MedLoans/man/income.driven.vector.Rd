@@ -14,8 +14,6 @@ income.driven.vector(base, interest, income, plan = 20)
 \item{income}{Income. Needs to be a vector.}
 
 \item{plan}{The timeframe you want to pay off your debt in. Default is 20.}
-
-\item{print.saved}{Prints saved amount. Default is 1.}
 }
 \description{
 This function calculates how much of your loan is forgiven. Similar to the 

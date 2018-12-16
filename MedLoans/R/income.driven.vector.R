@@ -6,7 +6,6 @@
 #' @param interest Interest rate on your loan.
 #' @param income Income. Needs to be a vector.
 #' @param plan The timeframe you want to pay off your debt in. Default is 20.
-#' @param print.saved Prints saved amount. Default is 1.
 #' @keywords interest, income
 #' @export
 #' @examples
