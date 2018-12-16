@@ -9,7 +9,8 @@
 #' @keywords interest, income
 #' @export
 #' @examples
-#' income.driven()
+#' income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+#' income.driven(400000,.075,income, plan=20)
 
 income.driven <- function(base, interest, income, plan = 20) {
   if(!(base>0)) {warning("Did you provide a positive value for base?")}

@@ -5,7 +5,7 @@
 #' @keywords residency, specialty, salary
 #' @export
 #' @examples
-#' specialty_salary()
+#' specialty_salary("Internal Medicine")
 
 specialty_salary <- function(specialty) {
   if(specialty == "Anesthesiology") {salary = 386000}

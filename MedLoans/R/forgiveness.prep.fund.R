@@ -11,7 +11,7 @@
 #' @keywords tax, debt, debt forgiveness
 #' @export
 #' @examples
-#' forgiveness.prep.fund()
+#' forgiveness.prep.fund(545732.1, .05, .35, 5, years=20, print.saved=1)
 
 forgiveness.prep.fund <- function(amount.forgiven, growth.rate, tax.rate, res, years =20, print.saved=1) {#determines how much you need to put away per year to cover your tax bill on the forgiven amount from income.driven or income.driven short (for income driven short you would need to change years to 10) --- I assume people aren't putting money toward this during residency
   if(!(amount.forgiven>0)) {warning("Did you provide a positive value for amount.forgiven?")}
