@@ -17,7 +17,7 @@ payments(base, interest, payment)
 This function allows you to keep track of your payments toward your debt.
 }
 \examples{
-payments()
+payments(100000, .075, 10000)
 }
 \keyword{debt,}
 \keyword{interest}

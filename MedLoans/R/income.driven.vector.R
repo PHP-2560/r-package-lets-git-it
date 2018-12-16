@@ -10,7 +10,9 @@
 #' @keywords interest, income
 #' @export
 #' @examples
-#' income.driven.vector()
+#' income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+#' income.driven.vector(400000,.075,income, plan=20)
+
 
 income.driven.vector <- function(base, interest, income, plan = 20) { #income needs to be a 20 element vector
   if(!(base>0)) {warning("Did you provide a positive value for base?")}

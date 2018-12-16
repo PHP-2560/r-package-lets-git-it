@@ -5,7 +5,7 @@
 #' @keywords residency, specialty
 #' @export
 #' @examples
-#' specialty_res()
+#' specialty_res("Internal Medicine")
 
 specialty_res <- function(specialty) {
   if(specialty == "Anesthesiology") {res = 4}

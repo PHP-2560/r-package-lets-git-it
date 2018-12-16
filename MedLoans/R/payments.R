@@ -7,7 +7,7 @@
 #' @keywords debt, interest
 #' @export
 #' @examples
-#' payments()
+#' payments(100000, .075, 10000)
 
 payments <- function(base, interest, payment){ #annual payment made is payment, base is the debt, interest is the rate at which the debt grows
   if(!(base>0)) {warning("Did you provide a positive value for base?")}

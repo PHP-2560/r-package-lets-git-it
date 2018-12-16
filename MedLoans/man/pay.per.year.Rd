@@ -20,7 +20,7 @@ This function allows you calculate how much you need to pay per year
 to pay off your loans after residency.
 }
 \examples{
-pay.per.year()
+pay.per.year(400000, .075, 3, years = 20)
 }
 \keyword{debt,}
 \keyword{interest}

@@ -1,0 +1,133 @@
+---
+title: "MedLoans"
+author: "Jon Spiegel and Kevin Chen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MedLoans}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+#Payments
+    
+The `payments()` function takes a fixed amount of money you will pay (`payment`) against your total debt (`base`) which is growing a fixed rate (`interest`) and will spit out a vector of 100 payments (or less if you have paid off your debt in less) with the amount owed at the end of each growth cycle (typcially a year).
+    
+For example, say you owed 100,000 USD growing at 7.5% per year and paid 10,000 USD per year against it:
+```{r, fig.show='hold'}
+MedLoans::payments(100000, .075, 10000)
+```
+`payments()` returns 3 outputs:
+    
+1. 17 is the number of years it will take to pay off the debt.
+    
+2. 165499 is the total number of dollars you will pay in paying off your debt.
+    
+3. The vector on the bottom displays how much is owed each of the 17 years of repayments.
+    
+This function pairs particularly well with first using the `pay.per.year()` function, which will tell you how much you need to pay per year to pay off your debt a chosen number of years after you finish medical school
+    
+#Pay Per Year
+    
+The function `pay.per.year()` takes in your debt, its interest rate, your number of residency years, and the number of years after medical school at which point you would like to be done repaying all of your debt and returns the amount you need to pay per year to achieve this goal. It is assumed here that you will not be making payments during residency.
+
+For example, say you owed 400,000 USD growing at a rate of 7.5% per year, have a 3-year residency, and want to finish paying 20 years after medical school. Then you would have:
+
+```{r, fig.show='hold'}
+library(MedLoans)
+pay.per.year(400000, .075, 3, years = 20)
+```
+The last output value from `pay.per.year()` is the one that matters. Here, we see we would need to pay 48,632.41 USD per year for the first 17 years after residency in order to pay off our medical school debt.
+    
+The output from `pay.per.year()` can be tested using the functions `grow()` and `payments()`. First, grow the principle debt by however many years you will be in residency. Then put this grown value into `payments()`, with the appropirate interest rate and the payment output from `pay.per.year()`. The results should agree; for example, having it take you 20 minus the number of your residency years to finish your repayments at that rate. An example corresponding to this is shown below:
+
+```{r, fig.show='hold'}
+grow(400000, .075, 3)
+payments(496918.8, .075, 48632)
+```
+    
+#Income Driven
+    
+The `income.driven()` function takes in the amount of federal debt owed at the end of medical school, the interest rate at which it was borrowed, the income of the borrower, and the number of years they plan to pay 10% of their income for. It then calculates how much of the debt will be forgiven after they have completed their term of repaying 10% of their income.
+    
+For example, suppose somebody borrowed 400,000 USD from the federal government and is becoming an oncologist (residency = 5 years, average salary = 353,000 USD). We will assume they borrowed at a rate of 7.5% and that they will pay it back over 20 years.
+
+```{r, fig.show='hold'}
+library(MedLoans)
+income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+income.driven(400000,.075,income, plan=20)
+```
+
+This gives us a final forgiven amount of 545732.1 USD.
+    
+The function `forgiveness.prep.fund()` can help calculate how much this means you now need to store away per year to cover the tax bill on the forgiven loan amount.
+    
+Additionally, `income.driven.vector()` is a highly similar function; the difference between the two functions is that `income.driven()` returns the final amount forgiven, whereas `income.driven.vector()` returns the balance after each of the years in the form of a vector.
+
+#Income Driven Vector
+    
+The function `income.driven.vector()` takes in the amount of federal debt owed at the end of medical school, the interest rate at which it was borrowed, your annual income, and the number of many years you plan to pay 10% of your income for. It then calculates how much of your debt will be left each year after you have completed your term of repaying 10% of your income. On the final year, this debt will be forgiven and taxed.
+    
+For example, suppose somebody borrowed 400,000 USD from the federal government and is becoming an oncologist (residency = 5 years, average salary = 353,000 USD). We will assume they borrowed at a rate of 7.5% and that they will pay it back over 20 years.
+
+```{r, fig.show='hold'}
+library(MedLoans)
+income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+income.driven.vector(400000,.075,income, plan=20)
+```
+
+This gives us a final forgiven amount of 545732.1 USD.
+    
+`income.driven()` is a highly similar function; the difference is that `income.driven.vector()` returns the balance after each of the years in the form of a vector, whereas `income.driven()` returns only the final amount forgiven.
+    
+#Grow
+    
+The `grow()` function takes in the size of a loan, its interest rate, and the number of times its interest is compounded. For example, if you owed 100,000 USD at 7.5% interest, you would expect this debt to become 107,500 USD after one year:
+
+```{r, fig.show='hold'}
+library(MedLoans)
+grow(100000, .075, n=1)
+```
+
+It is less intuitive, however, what your debt would look like after it is compounded 8 times:
+
+```{r, fig.show='hold'}
+grow(100000, .075, n=8)
+```
+    
+#Forgiveness Prep Fund
+    
+The `forgiveness.prep.fund()` function takes in the amount of money ultimately forgiven, the rate at which our savings grow, the tax rate, the number of years spent in residency, and the total number of years (including residency) between graduating medical school and paying off the tax bill on the forgiven loan amount and returns how much needs to be put away per year by the person taking out the loan in order to cover their ultimate tax bill. 
+    
+For example, suppose somebody borrowed 400,000 USD from the federal government and is becoming an oncologist (residency = 5 years, average salary = 353,000 USD). We will assume they borrowed this amount with an interest rate of 7.5% and that they will pay it back over 20 years.
+    
+First, we will need to find how out much of their loan will be forgiven. We can find this using the `income.driven()` function:
+
+```{r, fig.show='hold'}
+library(MedLoans)
+income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+income.driven(400000,.075,income, plan=20)
+```
+
+This gives us a final forgiven amount of 545732.1 USD.
+    
+We can then apply the `forgiveness.prep.fund()` function:
+    
+```{r, fig.show='hold'}
+forgiveness.prep.fund(545732.1, .05, .35, 5, years=20, print.saved=0)
+```
+
+This tells us that we need to pay 8064.708 USD per year for each year after residency in order to cover the tax bill on the forgiven 545,732 USD.
+    
+If we set `print.saved` = 1, we can see that we owe 182,726 USD to the IRS in the end:
+
+```{r, fig.show='hold'}
+forgiveness.prep.fund(545732.1, .05, .35, 5, years=20, print.saved=1)
+```

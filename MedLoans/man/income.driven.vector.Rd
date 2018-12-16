@@ -22,7 +22,8 @@ This function calculates how much of your loan is forgiven. Similar to the
 regular income.driven() function but returns a vector.
 }
 \examples{
-income.driven.vector()
+income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+income.driven.vector(400000,.075,income, plan=20)
 }
 \keyword{income}
 \keyword{interest,}

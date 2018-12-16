@@ -13,7 +13,7 @@ specialty_salary(specialty)
 This function returns the average attending salary for a given specialty.
 }
 \examples{
-specialty_salary()
+specialty_salary("Internal Medicine")
 }
 \keyword{residency,}
 \keyword{salary}

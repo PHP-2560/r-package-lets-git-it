@@ -9,7 +9,7 @@
 #' @keywords debt, interest
 #' @export
 #' @examples
-#' pay.per.year()
+#' pay.per.year(400000, .075, 3, years = 20)
 
 pay.per.year <- function(debt.total, interest, res, years = 20) {
   if(!(debt.total>0)) {warning("Did you provide a positive value for debt.total?")}
