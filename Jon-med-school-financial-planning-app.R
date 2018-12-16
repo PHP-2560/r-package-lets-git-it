@@ -11,20 +11,20 @@ ui <- fluidPage(
     sidebarLayout(
       sidebarPanel(
         #input undergraduate federal debt, default is $0
-        numericInput("undergrad_federal_debt", "Undergraduate Federal Debt", 0),
+        numericInput("undergrad_federal_debt", "Undergraduate Federal Debt (at Medical School Graduation)", 0),
         #input undergraduate private debt, default is $0
-        numericInput("undergrad_private_debt", "Undergraduate Private Debt", 0),
+        numericInput("undergrad_private_debt", "Undergraduate Private Debt (at Medical School Graduation)", 0),
         #input medical school federal debt, default is $0
-        numericInput("med_federal_debt", "Medical School Federal Debt", 0),
+        numericInput("med_federal_debt", "Medical School Federal Debt (at Medical School Graduation)", 0),
         #input medical school private debt, default is $0
-        numericInput("med_private_debt", "Medical School Private Debt", 0),
+        numericInput("med_private_debt", "Medical School Private Deb (at Medical School Graduation)", 0),
         #input average interest rate, default is 7.6%
-        numericInput("avg_interest_rate", "Average Interest Rate", 0.076),
+        numericInput("avg_interest_rate", "Average Interest Rate on Loans", 0.076),
         #select a specialty, default is internal medicine
         #selectInput("specialty", label = h5("Select a specialty"),
                     #choices = specialty_info$Specialty, selected = specialty_info$Specialty[6]),
         #input years of training
-        numericInput("PGY_education", "Years of Training", 3),
+        numericInput("PGY_education", "Years of Training (Residency+Fellowship)", 3),
         #input average attending salary
         numericInput("avg_attending_salary", "Average Attending Salary", 230000),
         #input average residency salary, default is $65,000
@@ -34,7 +34,8 @@ ui <- fluidPage(
         #input attending tax rate, default is 35%
         numericInput("attending_tax", "Attending Tax Rate", 0.35),
         #input growth rate, defualt is 5%
-        numericInput("growth_rate", "Forgiveness Prep Fund Growth Rate", 0.05)
+        numericInput("growth_rate", "Forgiveness Prep Fund Growth Rate", 0.05),
+          helpText("At the end of the 10- and 20-year 10% repayment plan, the 'forgiven' loan amount is taxable. To ultimately pay this off, you need to put money away each year. This is the expected rate at which your savings fund will grow.")
       ),
       mainPanel(
         tabsetPanel(
@@ -57,25 +58,25 @@ server <- function(input, output, session) {
   source("income.driven.vector.R")
   source("forgiveness.prep.fund.R")
   observe({
-    updateNumericInput(session, "undergrad_federal_debt", "Undergraduate Federal Debt", 0)
+    updateNumericInput(session, "undergrad_federal_debt", "Undergraduate Federal Debt (at Medical School Graduation)", 0)
   })
   observe({
-    updateNumericInput(session, "undergrad_private_debt", "Undergraduate Private Debt", 0)
+    updateNumericInput(session, "undergrad_private_debt", "Undergraduate Private Debt (at Medical School Graduation)", 0)
   })
   observe({
-    updateNumericInput(session, "med_federal_debt", "Medical School Federal Debt", 0)
+    updateNumericInput(session, "med_federal_debt", "Medical School Federal Debt (at Medical School Graduation)", 0)
   })
   observe({
-    updateNumericInput(session, "med_private_debt", "Medical School Private Debt", 0)
+    updateNumericInput(session, "med_private_debt", "Medical School Private Deb (at Medical School Graduation)", 0)
   })
   observe({
-    updateNumericInput(session, "avg_interest_rate", "Average Interest Rate", 0.076)
+    updateNumericInput(session, "avg_interest_rate", "Average Interest Rate on Loans", 0.076)
   })
   observe({
     updateSelectInput(session, "specialty", label = h5("Select a specialty"))
   })
   observe({
-    updateNumericInput(session, "PGY_education", "Years of Training")
+    updateNumericInput(session, "PGY_education", "Years of Training (Residency+Fellowship)")
   })
   observe({
     updateNumericInput(session, "avg_attending_salary", "Average Attending Salary")
@@ -93,6 +94,7 @@ server <- function(input, output, session) {
     updateNumericInput(session, "growth_rate", "Forgiveness Prep Fund Growth Rate", 0.05)
   })
 
+  
   output$debt <- renderPlot({
 #First, we will initialize values that are used throughout (ex. salary, debt, interest rate, residency lenghth, etc. This occurs immediately below)
   res <- input$PGY_education
@@ -112,7 +114,6 @@ server <- function(input, output, session) {
   federal.total <- input$undergrad_federal_debt + input$med_federal_debt 
     
     
-    
 #STANDARD: Now we begin to get the values for the standard output
   debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
   payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
@@ -130,7 +131,6 @@ server <- function(input, output, session) {
   cum_disposable_standard <- cumsum(disposable_standard)
     
   standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
-    
     
     
 #10-YEAR LOAN REPAYMENT OPTION- values calculated below, first the private payments then the federal ones
@@ -175,7 +175,6 @@ server <- function(input, output, session) {
   ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
     
     
-    
 #20 YEAR REPAYMENT OPTION
   #Just as with the 10-year repayment, we will need to handle the private (not forgivable) loans first
   #the code for this is already calculated above
@@ -207,7 +206,6 @@ server <- function(input, output, session) {
   twenty_year_frame <- data.frame(years, gross, disposable_twenty, cum_disposable_twenty, debt_left_twenty, payment_twenty, total_paid_twenty, forgiveness.fund.annual_twenty)
     
     
-    
 #UNDERSERVED REPAYMENT OPTION
   total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
   underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
@@ -225,7 +223,6 @@ server <- function(input, output, session) {
   total_paid_underserved <- cumsum(underserved.repay)
     
   underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
-    
     
     
 #MILITARY REPAYMENT OPTION
@@ -248,65 +245,66 @@ server <- function(input, output, session) {
   military_frame <- data.frame(years, military.gross, disposable_military, cum_disposable_military, military.remaining, military.repay, total_paid_military)
     
     
-p1 <- ggplot(standard_frame, aes(x = years)) +
-    geom_line(aes(y = debt_left_standard, color = "Debt Remaining")) +
-    scale_color_manual("",
-                     breaks = c("Debt Remaining"),
-                     values = c("Debt Remaining" = "red")) +
-    scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("Standard Repayment Option") + 
-      theme_minimal()
-    
-p2 <- ggplot(ten_year_frame, aes(x = years)) +
-    geom_line(aes(y = debt_left_ten, color = "Debt Remaining")) +
-    scale_color_manual("",
+  p1 <- ggplot(standard_frame, aes(x = years)) +
+      geom_line(aes(y = debt_left_standard, color = "Debt Remaining")) +
+      scale_color_manual("",
                        breaks = c("Debt Remaining"),
                        values = c("Debt Remaining" = "red")) +
-    scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("10-Year 10% Repayment Option") + 
-      theme_minimal()
+      scale_y_continuous(labels = comma) +
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("Standard Repayment Option") + 
+        theme_minimal()
     
-p3 <- ggplot(twenty_year_frame, aes(x = years)) +
-    geom_line(aes(y = debt_left_twenty, color = "Debt Remaining")) +
-    scale_color_manual("",
+  p2 <- ggplot(ten_year_frame, aes(x = years)) +
+      geom_line(aes(y = debt_left_ten, color = "Debt Remaining")) +
+      scale_color_manual("",
+                         breaks = c("Debt Remaining"),
+                         values = c("Debt Remaining" = "red")) +
+      scale_y_continuous(labels = comma) +
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("10-Year 10% Repayment Option") + 
+        theme_minimal()
+    
+  p3 <- ggplot(twenty_year_frame, aes(x = years)) +
+      geom_line(aes(y = debt_left_twenty, color = "Debt Remaining")) +
+      scale_color_manual("",
+                         breaks = c("Debt Remaining"),
+                         values = c("Debt Remaining" = "red")) +
+      scale_y_continuous(labels = comma) +
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("20-Year 10% Repayment Option") + 
+        theme_minimal()
+    
+  p4 <- ggplot(underserved_frame, aes(x = years)) +
+      geom_line(aes(y = underserved.remaining, color = "Debt Remaining")) +
+      scale_color_manual("",
+                         breaks = c("Debt Remaining"),
+                         values = c("Debt Remaining" = "red")) +
+      scale_y_continuous(labels = comma) +
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("NHSC (Underserved) Repayment Option") + 
+        theme_minimal()
+    
+  p5 <- ggplot(military_frame, aes(x = years)) +
+      geom_line(aes(y = military.remaining, color = "Debt Remaining")) +
+      scale_color_manual("",
                        breaks = c("Debt Remaining"),
                        values = c("Debt Remaining" = "red")) +
-    scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("20-Year 10% Repayment Option") + 
-      theme_minimal()
-    
-p4 <- ggplot(underserved_frame, aes(x = years)) +
-    geom_line(aes(y = underserved.remaining, color = "Debt Remaining")) +
-    scale_color_manual("",
-                       breaks = c("Debt Remaining"),
-                       values = c("Debt Remaining" = "red")) +
-    scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("NHSC (Underserved) Repayment Option") + 
-      theme_minimal()
-    
-p5 <- ggplot(military_frame, aes(x = years)) +
-    geom_line(aes(y = military.remaining, color = "Debt Remaining")) +
-    scale_color_manual("",
-                     breaks = c("Debt Remaining"),
-                     values = c("Debt Remaining" = "red")) +
-    scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("Military Repayment Option") + 
-      theme_minimal()
+      scale_y_continuous(labels = comma) +
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("Military Repayment Option") + 
+        theme_minimal()
     
     
 ggarrange(p1, p2, p3, p4, p5)
   })
     
+  
   
   
 output$year_by_year <- renderPlot({
@@ -328,7 +326,6 @@ output$year_by_year <- renderPlot({
   federal.total <- input$undergrad_federal_debt + input$med_federal_debt 
 
 
-
 #STANDARD: Now we begin to get the values for the standard output
   debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
   payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
@@ -346,7 +343,6 @@ output$year_by_year <- renderPlot({
   cum_disposable_standard <- cumsum(disposable_standard)
     
   standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
-    
     
     
 #10-YEAR LOAN REPAYMENT OPTION- values calculated below, first the private payments then the federal ones
@@ -391,7 +387,6 @@ output$year_by_year <- renderPlot({
   ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
     
     
-    
 #20 YEAR REPAYMENT OPTION
   #Just as with the 10-year repayment, we will need to handle the private (not forgivable) loans first
   #the code for this is already calculated above
@@ -423,7 +418,6 @@ output$year_by_year <- renderPlot({
   twenty_year_frame <- data.frame(years, gross, disposable_twenty, cum_disposable_twenty, debt_left_twenty, payment_twenty, total_paid_twenty, forgiveness.fund.annual_twenty)
     
     
-    
 #UNDERSERVED REPAYMENT OPTION
   total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
   underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
@@ -441,7 +435,6 @@ output$year_by_year <- renderPlot({
   total_paid_underserved <- cumsum(underserved.repay)
     
   underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
-    
     
     
 #MILITARY REPAYMENT OPTION
@@ -472,10 +465,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
                          values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("Standard Repayment Option") + 
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("Standard Repayment Option") + 
+        theme_minimal()
     
     p2 <- ggplot(ten_year_frame, aes(x = years)) +
       geom_line(aes(y = gross, color = "Gross Income")) +
@@ -485,10 +478,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
                          values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("10-Year 10% Repayment Option") + 
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("10-Year 10% Repayment Option") + 
+        theme_minimal()
     
     p3 <- ggplot(twenty_year_frame, aes(x = years)) +
       geom_line(aes(y = gross, color = "Gross Income")) +
@@ -498,10 +491,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
                          values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("20-Year 10% Repayment Option") + 
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("20-Year 10% Repayment Option") + 
+        theme_minimal()
     
     p4 <- ggplot(underserved_frame, aes(x = years)) +
       geom_line(aes(y = gross, color = "Gross Income")) +
@@ -511,10 +504,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
                          values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("NHSC (Underserved) Repayment Option") + 
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("NHSC (Underserved) Repayment Option") + 
+        theme_minimal()
     
     p5 <- ggplot(military_frame, aes(x = years)) +
       geom_line(aes(y = military.gross, color = "Gross Income")) +
@@ -524,15 +517,16 @@ output$year_by_year <- renderPlot({
                          breaks = c("Gross Income", "Disposable Income", "Debt Payment"),
                          values = c("Gross Income" = "green", "Disposable Income" = "blue", "Debt Payment" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("Military Repayment Option") + 
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("Military Repayment Option") + 
+        theme_minimal()
     
     ggarrange(p1, p2, p3, p4, p5)
   })
   
   
+
   
   output$lifetime_earnings <- renderPlot({
 #First, we will initialize values that are used throughout (ex. salary, debt, interest rate, residency lenghth, etc. This occurs immediately below)
@@ -553,7 +547,6 @@ output$year_by_year <- renderPlot({
   federal.total <- input$undergrad_federal_debt + input$med_federal_debt 
   
   
-    
 #STANDARD: Now we begin to get the values for the standard output
   debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
   payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
@@ -571,7 +564,6 @@ output$year_by_year <- renderPlot({
   cum_disposable_standard <- cumsum(disposable_standard)
     
   standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
-    
     
     
 #10-YEAR LOAN REPAYMENT OPTION- values calculated below, first the private payments then the federal ones
@@ -616,7 +608,6 @@ output$year_by_year <- renderPlot({
   ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
     
     
-    
 #20 YEAR REPAYMENT OPTION
   #Just as with the 10-year repayment, we will need to handle the private (not forgivable) loans first
   #the code for this is already calculated above
@@ -648,7 +639,6 @@ output$year_by_year <- renderPlot({
   twenty_year_frame <- data.frame(years, gross, disposable_twenty, cum_disposable_twenty, debt_left_twenty, payment_twenty, total_paid_twenty, forgiveness.fund.annual_twenty)
     
     
-    
 #UNDERSERVED REPAYMENT OPTION
   total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
   underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
@@ -666,7 +656,6 @@ output$year_by_year <- renderPlot({
   total_paid_underserved <- cumsum(underserved.repay)
     
   underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
-    
     
     
 #MILITARY REPAYMENT OPTION
@@ -696,10 +685,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
                          values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("Standard Repayment Option") + 
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("Standard Repayment Option") + 
+        theme_minimal() 
     
     p2 <- ggplot(ten_year_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_ten, color = "Cumulative Disposable Income")) +
@@ -708,10 +697,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
                          values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("10-Year 10% Repayment Option") +
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("10-Year 10% Repayment Option") +
+        theme_minimal()
     
     p3 <- ggplot(twenty_year_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_twenty, color = "Cumulative Disposable Income")) +
@@ -720,10 +709,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
                          values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("20-Year 10% Repayment Option") +
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("20-Year 10% Repayment Option") +
+        theme_minimal()
     
     p4 <- ggplot(underserved_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_underserved, color = "Cumulative Disposable Income")) +
@@ -732,10 +721,10 @@ output$year_by_year <- renderPlot({
                          breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
                          values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("NHSC (Underserved) Repayment Option") +
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("NHSC (Underserved) Repayment Option") +
+        theme_minimal()
     
     p5 <- ggplot(military_frame, aes(x = years)) +
       geom_line(aes(y = cum_disposable_military, color = "Cumulative Disposable Income")) +
@@ -744,16 +733,17 @@ output$year_by_year <- renderPlot({
                          breaks = c("Cumulative Disposable Income", "Total Debt Paid"),
                          values = c("Cumulative Disposable Income" = "green", "Total Debt Paid" = "red")) +
       scale_y_continuous(labels = comma) +
-      xlab("Years After Medical School Graduation") +
-      ylab("Dollars") +
-      ggtitle("Military Repayment Option") +
-      theme_minimal()
+        xlab("Years After Medical School Graduation") +
+        ylab("Dollars") +
+        ggtitle("Military Repayment Option") +
+        theme_minimal()
     
     ggarrange(p1, p2, p3, p4, p5)
     
   })
 
 
+  
   
   
 output$Repayments <- renderPrint({
@@ -781,7 +771,6 @@ output$Repayments <- renderPrint({
   federal.total <- input$undergrad_federal_debt + input$med_federal_debt 
   
   
-  
 #STANDARD: Now we begin to get the values for the standard output
   debt_payment <- pay.per.year(debt_total, input$avg_interest_rate, res, years = 20)
   payments_output_standard <- payments(grow(debt_total, input$avg_interest_rate, n = res), input$avg_interest_rate, debt_payment)
@@ -799,7 +788,6 @@ output$Repayments <- renderPrint({
   cum_disposable_standard <- cumsum(disposable_standard)
   
   standard_frame <- data.frame(years, gross, disposable_standard, cum_disposable_standard, debt_left_standard, debt_payment_standard, total_paid_standard)
-  
   
   
 #10-YEAR LOAN REPAYMENT OPTION- values calculated below, first the private payments then the federal ones
@@ -844,7 +832,6 @@ output$Repayments <- renderPrint({
   ten_year_frame <- data.frame(years, gross, disposable_ten, cum_disposable_ten, debt_left_ten, payment_ten, total_paid_ten, forgiveness.fund.annual_ten)
   
   
-  
 #20 YEAR REPAYMENT OPTION
   #Just as with the 10-year repayment, we will need to handle the private (not forgivable) loans first
   #the code for this is already calculated above
@@ -876,7 +863,6 @@ output$Repayments <- renderPrint({
   twenty_year_frame <- data.frame(years, gross, disposable_twenty, cum_disposable_twenty, debt_left_twenty, payment_twenty, total_paid_twenty, forgiveness.fund.annual_twenty)
   
   
-  
 #UNDERSERVED REPAYMENT OPTION
   total.debt.underserved <- input$undergrad_private_debt + input$undergrad_federal_debt 
   underserved.payment <- pay.per.year(total.debt.underserved, input$avg_interest_rate, res, years = 20)
@@ -895,7 +881,6 @@ output$Repayments <- renderPrint({
   
   underserved_frame <- data.frame(years, gross, disposable_underserved, cum_disposable_underserved, underserved.remaining, underserved.repay, total_paid_underserved)
   
-
     
 #MILITARY REPAYMENT OPTION
   total.debt.military <- input$undergrad_private_debt + input$undergrad_federal_debt 
@@ -915,7 +900,6 @@ output$Repayments <- renderPrint({
   total_paid_military <- cumsum(military.repay)
   
   military_frame <- data.frame(years, military.gross, disposable_military, cum_disposable_military, military.remaining, military.repay, total_paid_military)
-  
   
   
 #Word form output is put below here (explaining the results in a paragraph for each option)  
