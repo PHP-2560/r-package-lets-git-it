@@ -38,11 +38,11 @@ ui <- fluidPage(
       ),
       mainPanel(
         tabsetPanel(
-          tabPanel("Info on Specialties", plotOutput("specials")),
+          tabPanel("Information on Specialties", plotOutput("specials")),
           tabPanel("Year-by-year", plotOutput("year_by_year")),
           tabPanel("Lifetime Earnings", plotOutput("lifetime_earnings")),
           tabPanel("Debt Repayment", plotOutput("debt")),
-          tabPanel("Description", htmlOutput("Repayments"))
+          tabPanel("Written Description", htmlOutput("Repayments"))
         )
       )
     )
@@ -73,14 +73,12 @@ server <- function(input, output, session) {
   
 output$specials <- renderPlot({
   
-#will need to make it renderPlot and plotOutput to make it show the graph
   Specialty <- c("Anesthesiology", "Cardiology", "Dermatology", "Emergency Medicine", "Endocrinology", "Family Practice", "Gastroenterology", "General Surgery", "Immunology", "Infectious Disease", "Internal Medicine", "Nephrology", "Neurology", "Neurosurgery", "Obstetrics/Gynecology", "Oncology", "Ophthalmology", "Orthopedic Surgery", "Otolaryngology", "Pathology", "Pediatrics", "Physical Medicine", "Plastic Surgery", "Psychiatry", "Pulmonary", "Radiation Oncology", "Radiology, Diagnostic", "Rheumatology", "Urology")
   Training <- c(4, 6, 4, 3, 5, 3, 6, 5, 5, 5, 3, 5, 4, 7, 4, 5, 4, 5, 5, 4, 3, 4, 6, 4, 5, 5, 5, 5, 5)
   Earnings <- c(386000, 423000, 392000, 350000, 212000, 219000, 408000, 322000, 272000, 231000, 230000, 294000, 244000, 663000, 300000, 363000, 357000, 497000, 383000, 286000, 212000, 269000, 501000, 273000, 321000, 468000, 401000, 257000, 373000)
   specialty_info <- data.frame(Specialty, Training, Earnings)
 
-
-  plotme <- ggplot(specialty_info, aes(Training, Earnings)) +
+  ggplot(specialty_info, aes(Training, Earnings)) +
     geom_smooth(method = "lm") +
     geom_point() +
     scale_y_continuous(labels = comma) +
@@ -92,9 +90,7 @@ output$specials <- renderPlot({
                      point.padding = 0.5,
                      segment.color = 'grey50',
                     size = 2)
-  
-  
-  ggarrange(plotme)
+
 })
   
   
@@ -304,8 +300,7 @@ output$debt <- renderPlot({
         ggtitle("Military Repayment Option") + 
         theme_minimal()
     
-    
-ggarrange(p1, p2, p3, p4, p5)
+    ggarrange(p1, p2, p3, p4, p5, ncol = 2, nrow = 3)
   })
     
   
@@ -526,7 +521,7 @@ output$year_by_year <- renderPlot({
         ggtitle("Military Repayment Option") + 
         theme_minimal()
     
-    ggarrange(p1, p2, p3, p4, p5)
+    ggarrange(p1, p2, p3, p4, p5, ncol = 2, nrow = 3)
   })
   
   
@@ -742,7 +737,7 @@ output$lifetime_earnings <- renderPlot({
         ggtitle("Military Repayment Option") +
         theme_minimal()
     
-    ggarrange(p1, p2, p3, p4, p5)
+    ggarrange(p1, p2, p3, p4, p5, ncol = 2, nrow = 3)
     
   })
 
@@ -980,15 +975,6 @@ output$Repayments <- renderUI({
            format(round(cum_disposable_military[20], 2), nsmall = 2), "."
     )
   )
-  #cat("Using the standard repayment plan (in which you pay back the entirety of your loans), you will pay $", total_paid_standard[20], "in total. This will work out to an average of $", stand.repay[1], "per year during residency and $", stand.repay[9], "during attendinghood. After taxes this means you will make an average of $", disposable_standard[2], " per year during residency, and $", disposable_standard[9], "per year during attendinghood (that is salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_standard[20], ".")
-  #cat("--------------------------------------------------------------------------------------------------------")
-  #cat("Using the 10-year repayment plan (in which you must work at a 401(c) and then must pay back the entirety of your private loans and pay 10% of your salary for 10 years), you will pay $", total_paid_ten[20], "in total. This will work out to an average of $", payment_ten[1], "per year during residency, $", payment_ten[9], "during attendinghood, and", payment_ten[19], "after completing your 10-years of repayments. After taxes this means you will make an average of $", disposable_ten[2], " per year during residency, $", disposable_ten[9], "per year during attendinghood, and $", disposable_ten[19], "after completing your 10 years repaying 10% of your income (these values are your salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_ten[20], ".")
-  #cat("--------------------------------------------------------------------------------------------------------")
-  #cat("Using the 20-year repayment plan (in which you must pay back the entirety of your private loans and pay 10% of your salary for 20 years), you will pay $", total_paid_twenty[20], "in total. This will work out to an average of $", payment_twenty[1], "per year during residency and $", payment_twenty[19], "during attendinghood. After taxes this means you will make an average of $", disposable_twenty[2], " per year during residency and $", disposable_twenty[19], "per year during attendinghood (these values are your salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_twenty[20], ".")
-  #cat("--------------------------------------------------------------------------------------------------------")
-  #cat("If you join the NHSC, they will pay for your medical education. This means we removed all of your medical loans on presenting this option. Note that this program is competitive and that to qualify, you will need to 1) commit to enter a primary care specialty, and 2) commit to provide care in an underserved community. You will still have to pay off your undergrad loans however. This means you will pay $", total_paid_underserved[20], "in total. This will work out to an average of $", underserved.payment[1], "per year during residency and $", underserved.payment[9], "during attendinghood. After taxes this means you will make an average of $", disposable_underserved[2], " per year during residency and $", disposable_underserved[19], "per year during attendinghood (these values are your salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_underserved[20], ".")
-  #cat("--------------------------------------------------------------------------------------------------------")
-  #cat("If you join the military, they will pay for your medical education. This means we removed all of your medical loans on presenting this option. Note that committing to the military comes with a complex comitment including a different match process and 4-6 years of military service owed after your residency (you either owe 4 years or the number of years of residency-1 year, whichever is larger). You will still have to pay off your undergrad loans however. This means you will pay $", total_paid_military[20], "in total. This will work out to an average of $", military.payment[1], "per year during residency and $", military.payment[19], "during attendinghood. After taxes this means you will make more money during each year in the military, including some money during medical school (shown here by increasing year 1 earnings by 50k). You will roughly earn $", disposable_military[5], " during each year in the military and $", disposable_military[19], "per year during attendinghood (these values are your salary after removing taxes and debt payments). In your first 20 years after med school, after taxes and debt repayments, you will make a total of $", cum_disposable_military[20], ".")
       })
 }
 
