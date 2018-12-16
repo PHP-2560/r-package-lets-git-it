@@ -5,10 +5,10 @@ Authors@R: c(
   person("Kevin", "Chen", email = "kevin_chen1@brown.edu", role = "aut"),
   person("Jon", "Spiegel", email = "jonathan_spiegel@brown.edu", role = c("aut", "cre")))
 Description: Our package is designed to help medical students do financial
-planning and choose between medical school financing options. We believe that
-this package will be helpful to potential medical school students because
-medical school is very expensive, and it can be very difficult for people to
-find quality information about financial planning on their own.
+    planning and choose between medical school financing options. We believe
+    that this package will be helpful to potential medical school students
+    because medical school is very expensive, and it can be very difficult for
+    people to find quality information about financial planning on their own.
 Depends: R (>= 3.5.1)
 License: MIT + file LICENSE
 Encoding: UTF-8
