@@ -532,7 +532,7 @@ output$year_by_year <- renderPlot({
   
 
   
-  output$lifetime_earnings <- renderPlot({
+output$lifetime_earnings <- renderPlot({
 #First, we will initialize values that are used throughout (ex. salary, debt, interest rate, residency lenghth, etc. This occurs immediately below)
   res <- input$PGY_education
   salary <- input$avg_attending_salary
