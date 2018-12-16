@@ -4,6 +4,9 @@ library(ggthemes)
 library(dplyr)
 library(scales)
 library(ggpubr)
+library(readr)
+library(scales)
+library(ggrepel)
 
 
 ui <- fluidPage(
@@ -39,6 +42,7 @@ ui <- fluidPage(
       ),
       mainPanel(
         tabsetPanel(
+          tabPanel("Info on Specialties"), textOutput("Specials"),
           tabPanel("Year-by-year", plotOutput("year_by_year")),
           tabPanel("Lifetime Earnings", plotOutput("lifetime_earnings")),
           tabPanel("Debt Repayment", plotOutput("debt")),
@@ -57,45 +61,45 @@ server <- function(input, output, session) {
   source("income.driven.R")
   source("income.driven.vector.R")
   source("forgiveness.prep.fund.R")
-  observe({
-    updateNumericInput(session, "undergrad_federal_debt", "Undergraduate Federal Debt (at Medical School Graduation)", 0)
-  })
-  observe({
-    updateNumericInput(session, "undergrad_private_debt", "Undergraduate Private Debt (at Medical School Graduation)", 0)
-  })
-  observe({
-    updateNumericInput(session, "med_federal_debt", "Medical School Federal Debt (at Medical School Graduation)", 0)
-  })
-  observe({
-    updateNumericInput(session, "med_private_debt", "Medical School Private Deb (at Medical School Graduation)", 0)
-  })
-  observe({
-    updateNumericInput(session, "avg_interest_rate", "Average Interest Rate on Loans", 0.076)
-  })
-  observe({
-    updateSelectInput(session, "specialty", label = h5("Select a specialty"))
-  })
-  observe({
-    updateNumericInput(session, "PGY_education", "Years of Training (Residency+Fellowship)")
-  })
-  observe({
-    updateNumericInput(session, "avg_attending_salary", "Average Attending Salary")
-  })
-  observe({
-    updateNumericInput(session, "avg_residency_salary", "Average Residency Salary", 65000)
-  })
-  observe({
-    updateNumericInput(session, "residency_tax", "Residency Tax Rate", 0.25)
-  })
-  observe({
-    updateNumericInput(session, "attending_tax", "Attending Tax Rate", 0.35)
-  })
-  observe({
-    updateNumericInput(session, "growth_rate", "Forgiveness Prep Fund Growth Rate", 0.05)
-  })
+  observe({updateNumericInput(session, "undergrad_federal_debt", "Undergraduate Federal Debt (at Medical School Graduation)", 0)})
+  observe({updateNumericInput(session, "undergrad_private_debt", "Undergraduate Private Debt (at Medical School Graduation)", 0)})
+  observe({updateNumericInput(session, "med_federal_debt", "Medical School Federal Debt (at Medical School Graduation)", 0)})
+  observe({updateNumericInput(session, "med_private_debt", "Medical School Private Deb (at Medical School Graduation)", 0)})
+  observe({updateNumericInput(session, "avg_interest_rate", "Average Interest Rate on Loans", 0.076)})
+  observe({updateNumericInput(session, "PGY_education", "Years of Training (Residency+Fellowship)")})
+  observe({updateNumericInput(session, "avg_attending_salary", "Average Attending Salary")})
+  observe({updateNumericInput(session, "avg_residency_salary", "Average Residency Salary", 65000)})
+  observe({updateNumericInput(session, "residency_tax", "Residency Tax Rate", 0.25)})
+  observe({updateNumericInput(session, "attending_tax", "Attending Tax Rate", 0.35)})
+  observe({updateNumericInput(session, "growth_rate", "Forgiveness Prep Fund Growth Rate", 0.05)})
 
   
-  output$debt <- renderPlot({
+  
+output$Specials <- renderPrint({
+  cat("It won't even do this for me")
+#will need to make it renderPlot and plotOutput to make it show the graph
+  #Specialty <- c("Anesthesiology", "Cardiology", "Dermatology", "Emergency Medicine", "Endocrinology", "Family Practice", "Gastroenterology", "General Surgery", "Immunology", "Infectious Disease", "Internal Medicine", "Nephrology", "Neurology", "Neurosurgery", "Obstetrics/Gynecology", "Oncology", "Ophthalmology", "Orthopedic Surgery", "Otolaryngology", "Pathology", "Pediatrics", "Physical Medicine", "Plastic Surgery", "Psychiatry", "Pulmonary", "Radiation Oncology", "Radiology, Diagnostic", "Rheumatology", "Urology")
+  #Training <- c(4, 6, 4, 3, 5, 3, 6, 5, 5, 5, 3, 5, 4, 7, 4, 5, 4, 5, 5, 4, 3, 4, 6, 4, 5, 5, 5, 5, 5)
+  #Earnings <- c(386000, 423000, 392000, 350000, 212000, 219000, 408000, 322000, 272000, 231000, 230000, 294000, 244000, 663000, 300000, 363000, 357000, 497000, 383000, 286000, 212000, 269000, 501000, 273000, 321000, 468000, 401000, 257000, 373000)
+  
+  
+  #specialty_info <- data.frame(Specialty, Training, Earnings)
+  
+  
+  #plotme <- ggplot(specialty_info, aes(Training, Earnings)) + geom_smooth(method = "lm") + geom_point() + scale_y_continuous(labels = comma) 
+  #+ xlab("Years of Training") + ylab("Average Annual Salary (in USD)") + ggtitle("Average Annual Earnings for Each Specialty") + theme_economist() + scale_color_economist() 
+  #+ geom_label_repel(aes(label = Specialty), box.padding   = 0.35, 
+  #                   point.padding = 0.5,
+  #                   segment.color = 'grey50',
+  #                  size = 2)
+  #
+  #
+  #ggarrange(plotme)
+})
+  
+  
+  
+output$debt <- renderPlot({
 #First, we will initialize values that are used throughout (ex. salary, debt, interest rate, residency lenghth, etc. This occurs immediately below)
   res <- input$PGY_education
   salary <- input$avg_attending_salary
