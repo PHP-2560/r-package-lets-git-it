@@ -8,7 +8,6 @@ library(readr)
 library(scales)
 library(ggrepel)
 
-
 ui <- fluidPage(
   titlePanel("Medical School Financial Planning"),
     sidebarLayout(
@@ -23,9 +22,6 @@ ui <- fluidPage(
         numericInput("med_private_debt", "Medical School Private Deb (at Medical School Graduation)", 0),
         #input average interest rate, default is 7.6%
         numericInput("avg_interest_rate", "Average Interest Rate on Loans", 0.076),
-        #select a specialty, default is internal medicine
-        #selectInput("specialty", label = h5("Select a specialty"),
-                    #choices = specialty_info$Specialty, selected = specialty_info$Specialty[6]),
         #input years of training
         numericInput("PGY_education", "Years of Training (Residency+Fellowship)", 3),
         #input average attending salary
@@ -42,7 +38,7 @@ ui <- fluidPage(
       ),
       mainPanel(
         tabsetPanel(
-          tabPanel("Info on Specialties"), textOutput("Specials"),
+          tabPanel("Info on Specialties", plotOutput("specials")),
           tabPanel("Year-by-year", plotOutput("year_by_year")),
           tabPanel("Lifetime Earnings", plotOutput("lifetime_earnings")),
           tabPanel("Debt Repayment", plotOutput("debt")),
@@ -75,26 +71,30 @@ server <- function(input, output, session) {
 
   
   
-output$Specials <- renderPrint({
-  cat("It won't even do this for me")
+output$specials <- renderPlot({
+  
 #will need to make it renderPlot and plotOutput to make it show the graph
-  #Specialty <- c("Anesthesiology", "Cardiology", "Dermatology", "Emergency Medicine", "Endocrinology", "Family Practice", "Gastroenterology", "General Surgery", "Immunology", "Infectious Disease", "Internal Medicine", "Nephrology", "Neurology", "Neurosurgery", "Obstetrics/Gynecology", "Oncology", "Ophthalmology", "Orthopedic Surgery", "Otolaryngology", "Pathology", "Pediatrics", "Physical Medicine", "Plastic Surgery", "Psychiatry", "Pulmonary", "Radiation Oncology", "Radiology, Diagnostic", "Rheumatology", "Urology")
-  #Training <- c(4, 6, 4, 3, 5, 3, 6, 5, 5, 5, 3, 5, 4, 7, 4, 5, 4, 5, 5, 4, 3, 4, 6, 4, 5, 5, 5, 5, 5)
-  #Earnings <- c(386000, 423000, 392000, 350000, 212000, 219000, 408000, 322000, 272000, 231000, 230000, 294000, 244000, 663000, 300000, 363000, 357000, 497000, 383000, 286000, 212000, 269000, 501000, 273000, 321000, 468000, 401000, 257000, 373000)
+  Specialty <- c("Anesthesiology", "Cardiology", "Dermatology", "Emergency Medicine", "Endocrinology", "Family Practice", "Gastroenterology", "General Surgery", "Immunology", "Infectious Disease", "Internal Medicine", "Nephrology", "Neurology", "Neurosurgery", "Obstetrics/Gynecology", "Oncology", "Ophthalmology", "Orthopedic Surgery", "Otolaryngology", "Pathology", "Pediatrics", "Physical Medicine", "Plastic Surgery", "Psychiatry", "Pulmonary", "Radiation Oncology", "Radiology, Diagnostic", "Rheumatology", "Urology")
+  Training <- c(4, 6, 4, 3, 5, 3, 6, 5, 5, 5, 3, 5, 4, 7, 4, 5, 4, 5, 5, 4, 3, 4, 6, 4, 5, 5, 5, 5, 5)
+  Earnings <- c(386000, 423000, 392000, 350000, 212000, 219000, 408000, 322000, 272000, 231000, 230000, 294000, 244000, 663000, 300000, 363000, 357000, 497000, 383000, 286000, 212000, 269000, 501000, 273000, 321000, 468000, 401000, 257000, 373000)
+  specialty_info <- data.frame(Specialty, Training, Earnings)
+
+
+  plotme <- ggplot(specialty_info, aes(Training, Earnings)) +
+    geom_smooth(method = "lm") +
+    geom_point() +
+    scale_y_continuous(labels = comma) +
+    xlab("Years of Training") +
+    ylab("Average Annual Salary (in USD)") +
+    ggtitle("Average Annual Earnings for Each Specialty")+
+    theme_economist() + scale_color_economist() +
+    geom_label_repel(aes(label = Specialty), box.padding   = 0.35,
+                     point.padding = 0.5,
+                     segment.color = 'grey50',
+                    size = 2)
   
   
-  #specialty_info <- data.frame(Specialty, Training, Earnings)
-  
-  
-  #plotme <- ggplot(specialty_info, aes(Training, Earnings)) + geom_smooth(method = "lm") + geom_point() + scale_y_continuous(labels = comma) 
-  #+ xlab("Years of Training") + ylab("Average Annual Salary (in USD)") + ggtitle("Average Annual Earnings for Each Specialty") + theme_economist() + scale_color_economist() 
-  #+ geom_label_repel(aes(label = Specialty), box.padding   = 0.35, 
-  #                   point.padding = 0.5,
-  #                   segment.color = 'grey50',
-  #                  size = 2)
-  #
-  #
-  #ggarrange(plotme)
+  ggarrange(plotme)
 })
   
   
