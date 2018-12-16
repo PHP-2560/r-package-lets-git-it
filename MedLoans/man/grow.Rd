@@ -18,7 +18,7 @@ if it is an annual interest rate. Defaults to 1.}
 This function allows you to grow a loan.
 }
 \examples{
-grow()
+grow(100000, .075, n=8)
 }
 \keyword{growth,}
 \keyword{interest}

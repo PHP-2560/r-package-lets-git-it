@@ -25,7 +25,7 @@ This function allows you to determine how much you need to put away per year
 to cover your tax bill on the forgiven amount.
 }
 \examples{
-forgiveness.prep.fund()
+forgiveness.prep.fund(545732.1, .05, .35, 5, years=20, print.saved=1)
 }
 \keyword{debt}
 \keyword{debt,}

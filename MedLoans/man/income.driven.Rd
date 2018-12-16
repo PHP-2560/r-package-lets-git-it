@@ -21,7 +21,8 @@ income.driven(base, interest, income, plan = 20)
 This function calculates how much of your loan is forgiven.
 }
 \examples{
-income.driven()
+income <- c(65000,65000,65000,65000,65000, 353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000, 353000,353000)
+income.driven(400000,.075,income, plan=20)
 }
 \keyword{income}
 \keyword{interest,}

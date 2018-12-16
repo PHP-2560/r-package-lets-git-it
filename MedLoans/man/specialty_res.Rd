@@ -13,7 +13,7 @@ specialty_res(specialty)
 This function returns the minimum length of residency for a given specialty.
 }
 \examples{
-specialty_res()
+specialty_res("Internal Medicine")
 }
 \keyword{residency,}
 \keyword{specialty}
