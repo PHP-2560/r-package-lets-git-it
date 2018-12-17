@@ -49,8 +49,6 @@ ui <- fluidPage(
   ) 
 
 server <- function(input, output, session) {
-  source("specialty_res.R")
-  source("specialty_salary.R")
   source("grow.R")
   source("payments.R")
   source("pay.per.year.R")
@@ -89,7 +87,7 @@ output$specials <- renderPlot({
     geom_label_repel(aes(label = Specialty), box.padding   = 0.35,
                      point.padding = 0.5,
                      segment.color = 'grey50',
-                    size = 2)
+                    size = 3)
 
 })
   
