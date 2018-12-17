@@ -89,7 +89,7 @@ output$specials <- renderPlot({
     geom_label_repel(aes(label = Specialty), box.padding   = 0.35,
                      point.padding = 0.5,
                      segment.color = 'grey50',
-                    size = 2)
+                    size = 3)
 
 })
   
